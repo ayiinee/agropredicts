@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Agricultural theme - greens and earth tones */
+    --background: 50 20% 98%;
+    --foreground: 140 15% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 140 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 140 15% 15%;
+
+    /* Primary: Fresh green for agriculture */
+    --primary: 134 61% 41%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 134 61% 65%;
+
+    /* Secondary: Warm earth tone */
+    --secondary: 46 33% 90%;
+    --secondary-foreground: 140 15% 15%;
+
+    --muted: 46 33% 94%;
+    --muted-foreground: 140 10% 45%;
+
+    /* Accent: Sky blue for freshness */
+    --accent: 200 65% 88%;
+    --accent-foreground: 140 15% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 140 20% 85%;
+    --input: 140 20% 92%;
+    --ring: 134 61% 41%;
+
+    /* Agricultural gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(134 61% 41%), hsl(134 61% 65%));
+    --gradient-earth: linear-gradient(180deg, hsl(46 33% 94%), hsl(46 33% 88%));
+    --gradient-field: linear-gradient(45deg, hsl(134 45% 45%), hsl(100 45% 50%));
+
+    /* Shadows with agricultural theme */
+    --shadow-soft: 0 4px 12px hsl(134 20% 20% / 0.08);
+    --shadow-medium: 0 8px 24px hsl(134 20% 20% / 0.12);
+    --shadow-primary: 0 8px 24px hsl(134 61% 41% / 0.2);
+
+    /* Farm-specific colors */
+    --farmer-primary: 134 61% 41%;
+    --distributor-primary: 24 85% 53%;
+    --cooperative-primary: 220 85% 58%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark agricultural theme */
+    --background: 140 15% 6%;
+    --foreground: 140 10% 90%;
+
+    --card: 140 15% 8%;
+    --card-foreground: 140 10% 90%;
+
+    --popover: 140 15% 8%;
+    --popover-foreground: 140 10% 90%;
+
+    --primary: 134 50% 55%;
+    --primary-foreground: 140 15% 8%;
+    --primary-glow: 134 50% 65%;
+
+    --secondary: 140 15% 15%;
+    --secondary-foreground: 140 10% 90%;
+
+    --muted: 140 15% 12%;
+    --muted-foreground: 140 8% 65%;
+
+    --accent: 140 15% 15%;
+    --accent-foreground: 140 10% 90%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 140 10% 90%;
+
+    --border: 140 15% 20%;
+    --input: 140 15% 15%;
+    --ring: 134 50% 55%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(134 50% 35%), hsl(134 50% 55%));
+    --gradient-earth: linear-gradient(180deg, hsl(140 15% 12%), hsl(140 15% 8%));
+    --gradient-field: linear-gradient(45deg, hsl(134 35% 25%), hsl(100 35% 30%));
+
+    /* Dark shadows */
+    --shadow-soft: 0 4px 12px hsl(0 0% 0% / 0.2);
+    --shadow-medium: 0 8px 24px hsl(0 0% 0% / 0.3);
+    --shadow-primary: 0 8px 24px hsl(134 50% 55% / 0.3);
+
+    /* Dark farm-specific colors */
+    --farmer-primary: 134 50% 55%;
+    --distributor-primary: 24 75% 60%;
+    --cooperative-primary: 220 75% 65%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
