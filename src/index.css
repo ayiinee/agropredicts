@@ -9,7 +9,8 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Agricultural theme - greens and earth tones */
-    --background: 50 20% 98%;
+    background-color: #e5e5e5;
+
     --foreground: 140 15% 15%;
 
     --card: 0 0% 100%;
