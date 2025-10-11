@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -25,6 +26,7 @@ interface RoleBasedLayoutProps {
 
 export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
   const { profile, signOut } = useAuth();
+  const location = useLocation();
 
   if (!profile) {
     return (
@@ -115,22 +117,29 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
       <nav className="sticky bottom-0 left-0 right-0 bg-card border-t lg:hidden">
         <ScrollArea className="w-full">
           <div className="flex items-center p-2 shadow-sm w-full">
-  {config.navigation.map((item) => {
-    const Icon = item.icon;
-    return (
-      <Button
-        key={item.path}
-        variant="ghost"
-        size="sm"
-        className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
-        onClick={() => (window.location.href = item.path)}
-      >
-        <Icon className="h-4 w-4" />
-      </Button>
-    );
-  })}
-</div>
-
+            {config.navigation.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  size="sm"
+                  className={`mobile-nav-item ${
+                    isActive 
+                      ? 'mobile-nav-item-active' 
+                      : 'hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={() => (window.location.href = item.path)}
+                >
+                  <Icon className={`h-4 w-4 ${isActive ? 'text-primary-foreground' : ''}`} />
+                  <span className={`text-xs ${isActive ? 'text-primary-foreground font-medium' : 'text-muted-foreground'}`}>
+                    {item.label}
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
         </ScrollArea>
       </nav>
 
@@ -140,13 +149,19 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
           <nav className="space-y-2">
             {config.navigation.map((item) => {
               const Icon = item.icon;
+              const isActive = location.pathname === item.path;
               return (
                 <Button
                   key={item.path}
                   variant="ghost"
-                  className="w-full justify-start gap-3"
+                  className={`nav-item w-full justify-start gap-3 ${
+                    isActive 
+                      ? 'nav-item-active' 
+                      : 'hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={() => (window.location.href = item.path)}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className={`h-4 w-4 ${isActive ? 'text-primary-foreground' : ''}`} />
                   {item.label}
                 </Button>
               );

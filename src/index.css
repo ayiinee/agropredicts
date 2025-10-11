@@ -1,16 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
+/* Modern Eco-Technology Design System */
 @layer base {
   :root {
-    /* Agricultural theme - greens and earth tones */
-    background-color: #e5e5e5;
-
+    /* Eco-technology theme with sustainability focus */
+    --background: 240 5% 98%; /* Very light neutral #F5F6FA */
     --foreground: 140 15% 15%;
 
     --card: 0 0% 100%;
@@ -19,65 +17,72 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 140 15% 15%;
 
-    /* Primary: Fresh green for agriculture */
-    --primary: 134 61% 41%;
+    /* Primary: Eco-green #31B57F */
+    --primary: 154 50% 45%; /* #31B57F */
     --primary-foreground: 0 0% 98%;
-    --primary-glow: 134 61% 65%;
+    --primary-glow: 154 50% 65%;
 
-    /* Secondary: Warm earth tone */
+    /* Secondary: Soft earth tone */
     --secondary: 46 33% 90%;
     --secondary-foreground: 140 15% 15%;
 
-    --muted: 46 33% 94%;
+    --muted: 240 5% 96%;
     --muted-foreground: 140 10% 45%;
 
-    /* Accent: Sky blue for freshness */
+    /* Accent: Fresh sky blue */
     --accent: 200 65% 88%;
     --accent-foreground: 140 15% 15%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 140 20% 85%;
-    --input: 140 20% 92%;
-    --ring: 134 61% 41%;
+    --border: 240 5% 90%;
+    --input: 240 5% 95%;
+    --ring: 154 50% 45%;
 
-    /* Agricultural gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(134 61% 41%), hsl(134 61% 65%));
-    --gradient-earth: linear-gradient(180deg, hsl(46 33% 94%), hsl(46 33% 88%));
-    --gradient-field: linear-gradient(45deg, hsl(134 45% 45%), hsl(100 45% 50%));
+    /* Modern eco gradients */
+    --gradient-primary: linear-gradient(135deg, #31B57F, #27A06F);
+    --gradient-earth: linear-gradient(180deg, #F5F6FA, #E8F5E8);
+    --gradient-field: linear-gradient(45deg, #31B57F, #4CAF50);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
 
-    /* Shadows with agricultural theme */
-    --shadow-soft: 0 4px 12px hsl(134 20% 20% / 0.08);
-    --shadow-medium: 0 8px 24px hsl(134 20% 20% / 0.12);
-    --shadow-primary: 0 8px 24px hsl(134 61% 41% / 0.2);
+    /* Modern shadows with glassmorphism */
+    --shadow-soft: 0 2px 8px rgba(49, 181, 127, 0.08);
+    --shadow-medium: 0 4px 16px rgba(49, 181, 127, 0.12);
+    --shadow-primary: 0 8px 24px rgba(49, 181, 127, 0.2);
+    --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.1);
 
-    /* Farm-specific colors */
-    --farmer-primary: 134 61% 41%;
+    /* Farm-specific colors with eco theme */
+    --farmer-primary: 154 50% 45%; /* #31B57F */
     --distributor-primary: 24 85% 53%;
     --cooperative-primary: 220 85% 58%;
 
-    --radius: 0.75rem;
+    /* Modern border radius */
+    --radius: 1rem; /* 16px for modern look */
 
-    --sidebar-background: 0 0% 98%;
-
+    /* Sidebar with glassmorphism */
+    --sidebar-background: 240 5% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    --sidebar-primary: 154 50% 45%;
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 240 5% 90%;
+    --sidebar-ring: 154 50% 45%;
 
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Weather and status colors */
+    --weather-sunny: 45 100% 60%; /* Yellow tint */
+    --weather-rainy: 200 100% 60%; /* Blue tint */
+    --weather-cloudy: 240 20% 70%; /* Gray tint */
+    
+    /* Alert colors */
+    --alert-warning: 38 100% 60%; /* #FFB84E */
+    --alert-danger: 0 100% 60%; /* #FF4E4E */
+    --alert-success: 154 50% 45%; /* #31B57F */
   }
 
   .dark {
-    /* Dark agricultural theme */
+    /* Dark eco-technology theme */
     --background: 140 15% 6%;
     --foreground: 140 10% 90%;
 
@@ -87,9 +92,9 @@ All colors MUST be HSL.
     --popover: 140 15% 8%;
     --popover-foreground: 140 10% 90%;
 
-    --primary: 134 50% 55%;
+    --primary: 154 50% 55%;
     --primary-foreground: 140 15% 8%;
-    --primary-glow: 134 50% 65%;
+    --primary-glow: 154 50% 65%;
 
     --secondary: 140 15% 15%;
     --secondary-foreground: 140 10% 90%;
@@ -105,30 +110,32 @@ All colors MUST be HSL.
 
     --border: 140 15% 20%;
     --input: 140 15% 15%;
-    --ring: 134 50% 55%;
+    --ring: 154 50% 55%;
 
-    /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(134 50% 35%), hsl(134 50% 55%));
+    /* Dark mode eco gradients */
+    --gradient-primary: linear-gradient(135deg, #31B57F, #27A06F);
     --gradient-earth: linear-gradient(180deg, hsl(140 15% 12%), hsl(140 15% 8%));
-    --gradient-field: linear-gradient(45deg, hsl(134 35% 25%), hsl(100 35% 30%));
+    --gradient-field: linear-gradient(45deg, hsl(154 35% 25%), hsl(100 35% 30%));
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
 
     /* Dark shadows */
     --shadow-soft: 0 4px 12px hsl(0 0% 0% / 0.2);
     --shadow-medium: 0 8px 24px hsl(0 0% 0% / 0.3);
-    --shadow-primary: 0 8px 24px hsl(134 50% 55% / 0.3);
+    --shadow-primary: 0 8px 24px hsl(154 50% 55% / 0.3);
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.2);
 
     /* Dark farm-specific colors */
-    --farmer-primary: 134 50% 55%;
+    --farmer-primary: 154 50% 55%;
     --distributor-primary: 24 75% 60%;
     --cooperative-primary: 220 75% 65%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 154 50% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 154 50% 55%;
   }
 }
 
@@ -138,6 +145,232 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  /* Unified card style matching the location card */
+  .unified-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-xl border border-white/20;
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Modern glassmorphism cards */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-white/20;
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-card-dark {
+    @apply bg-gray-900/80 backdrop-blur-sm border border-gray-700/20;
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Modern button styles */
+  .btn-primary {
+    @apply bg-gradient-to-r from-[#31B57F] to-[#27A06F] text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105;
+  }
+
+  .btn-secondary {
+    @apply bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-700 font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105;
+  }
+
+  /* Weather card styles */
+  .weather-sunny {
+    @apply bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200;
+  }
+
+  .weather-rainy {
+    @apply bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200;
+  }
+
+  .weather-cloudy {
+    @apply bg-gradient-to-br from-gray-50 to-slate-50 border-gray-200;
+  }
+
+  /* Modern progress bars */
+  .progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-2 overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-[#31B57F] to-[#27A06F] rounded-full transition-all duration-500 ease-out;
+  }
+
+  /* Alert styles */
+  .alert-warning {
+    @apply bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200 text-orange-800;
+  }
+
+  .alert-danger {
+    @apply bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-800;
+  }
+
+  .alert-success {
+    @apply bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-800;
+  }
+
+  /* Navigation hover effects */
+  .nav-item {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .nav-item:hover {
+    @apply transform scale-105;
+  }
+
+  .nav-item-active {
+    @apply bg-gradient-to-r from-[#31B57F] to-[#27A06F] text-white shadow-lg font-medium rounded-xl;
+  }
+
+  .nav-item-active:hover {
+    @apply shadow-xl scale-105;
+  }
+
+  /* Mobile navigation enhancements */
+  .mobile-nav-item {
+    @apply flex-1 flex flex-col items-center gap-1 h-auto py-3 transition-all duration-300 rounded-xl;
+  }
+
+  .mobile-nav-item:hover {
+    @apply transform scale-105 bg-white/10;
+  }
+
+  .mobile-nav-item-active {
+    @apply bg-gradient-to-r from-[#31B57F] to-[#27A06F] text-white shadow-lg;
+  }
+
+  .mobile-nav-item-active:hover {
+    @apply shadow-xl scale-105;
+  }
+
+  /* Modern card animations */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-[#31B57F] to-[#27A06F] bg-clip-text text-transparent;
+  }
+
+  /* Modern spacing utilities */
+  .section-spacing {
+    @apply space-y-6;
+  }
+
+  .card-spacing {
+    @apply p-6;
+  }
+
+  /* Icon containers */
+  .icon-container {
+    @apply p-3 rounded-xl bg-gradient-to-br from-[#31B57F]/10 to-[#27A06F]/10 transition-all duration-300 hover:scale-110;
+  }
+
+  .icon-container-primary {
+    @apply p-3 rounded-xl bg-gradient-to-br from-[#31B57F] to-[#27A06F] text-white transition-all duration-300 hover:scale-110;
+  }
+
+  /* Additional animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-bounce-gentle {
+    animation: bounceGentle 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bounceGentle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Weather icon animations */
+  .weather-icon {
+    @apply transition-all duration-500 hover:scale-125 hover:rotate-12;
+  }
+
+  /* Progress bar animation */
+  .progress-fill {
+    @apply transition-all duration-1000 ease-out;
+  }
+
+  /* Card entrance animations */
+  .card-entrance {
+    animation: cardEntrance 0.6s ease-out;
+  }
+
+  @keyframes cardEntrance {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Hover effects for interactive elements */
+  .interactive-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:scale-105 hover:-translate-y-1;
+  }
+
+  /* Loading shimmer effect */
+  .shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
   }
 }
