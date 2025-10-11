@@ -1,23 +1,23 @@
-import { ReactNode } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  LogOut, 
-  Home, 
-  Sprout, 
-  ShoppingCart, 
-  Users, 
-  Package, 
+import { ReactNode } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  LogOut,
+  Home,
+  Sprout,
+  ShoppingCart,
+  Users,
+  Package,
   TrendingUp,
   BarChart3,
   Leaf,
   Truck,
   Building2,
-  Camera
-} from 'lucide-react';
+  Camera,
+} from "lucide-react";
 
 interface RoleBasedLayoutProps {
   children: ReactNode;
@@ -37,35 +37,35 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
   const roleConfig = {
     farmer: {
       icon: Leaf,
-      color: 'bg-green-500',
+      color: "bg-green-500",
       navigation: [
-        { label: 'Dashboard', icon: Home, path: '/' },
-        { label: 'Lahan', icon: Sprout, path: '/fields' },
-        { label: 'Deteksi Hama', icon: Camera, path: '/pest-detection' },
-        { label: 'Belanja', icon: ShoppingCart, path: '/marketplace' },
-        { label: 'Kelompok Tani', icon: Users, path: '/groups' },
-      ]
+        { label: "Dashboard", icon: Home, path: "/" },
+        { label: "Lahan", icon: Sprout, path: "/fields" },
+        { label: "Deteksi Hama", icon: Camera, path: "/pest-detection" },
+        { label: "Belanja", icon: ShoppingCart, path: "/marketplace" },
+        { label: "Kelompok Tani", icon: Users, path: "/groups" },
+      ],
     },
     distributor: {
       icon: Truck,
-      color: 'bg-orange-500',
+      color: "bg-orange-500",
       navigation: [
-        { label: 'Dashboard', icon: Home, path: '/' },
-        { label: 'Produk', icon: Package, path: '/products' },
-        { label: 'Pesanan', icon: ShoppingCart, path: '/orders' },
-        { label: 'Analitik', icon: BarChart3, path: '/analytics' }
-      ]
+        { label: "Dashboard", icon: Home, path: "/" },
+        { label: "Produk", icon: Package, path: "/products" },
+        { label: "Pesanan", icon: ShoppingCart, path: "/orders" },
+        { label: "Analitik", icon: BarChart3, path: "/analytics" },
+      ],
     },
     cooperative: {
       icon: Building2,
-      color: 'bg-blue-500',
+      color: "bg-blue-500",
       navigation: [
-        { label: 'Dashboard', icon: Home, path: '/' },
-        { label: 'Produk Petani', icon: Package, path: '/farmer-products' },
-        { label: 'Manajemen Kelompok', icon: Users, path: '/group' },
-        { label: 'Analitik', icon: BarChart3, path: '/analytics' }
-      ]
-    }
+        { label: "Dashboard", icon: Home, path: "/" },
+        { label: "Produk Petani", icon: Package, path: "/farmer-products" },
+        { label: "Manajemen Kelompok", icon: Users, path: "/group" },
+        { label: "Analitik", icon: BarChart3, path: "/analytics" },
+      ],
+    },
   };
 
   const config = roleConfig[profile.role];
@@ -81,14 +81,18 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
               <RoleIcon className="h-6 w-6" />
             </div> */}
             <div>
-              <img src="/Agropredict.png" alt="Logo Agropredict" className="h-8 w-auto" />
-         
-       {/* <Badge variant="secondary" className="text-xs">
+              <img
+                src="/Agropredict.png"
+                alt="Logo Agropredict"
+                className="h-8 w-auto"
+              />
+
+              {/* <Badge variant="secondary" className="text-xs">
                 {profile.role === 'farmer' ? 'Petani' : profile.role === 'distributor' ? 'Distributor' : 'Koperasi'}
               </Badge> */}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground hidden sm:block">
               {profile.full_name}
@@ -107,30 +111,27 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
       </header>
 
       {/* Main content area */}
-      <main className="container mx-auto p-4 max-w-7xl">
-        {children}
-      </main>
+      <main className="container mx-auto p-4 max-w-7xl">{children}</main>
 
       {/* Mobile bottom navigation */}
-      <nav className="sticky bottom-0 left-0 right-0 bg-card border-t lg:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t z-50 lg:hidden">
         <ScrollArea className="w-full">
           <div className="flex items-center p-2 shadow-sm w-full">
-  {config.navigation.map((item) => {
-    const Icon = item.icon;
-    return (
-      <Button
-        key={item.path}
-        variant="ghost"
-        size="sm"
-        className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
-        onClick={() => (window.location.href = item.path)}
-      >
-        <Icon className="h-4 w-4" />
-      </Button>
-    );
-  })}
-</div>
-
+            {config.navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  size="sm"
+                  className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
+                  onClick={() => (window.location.href = item.path)}
+                >
+                  <Icon className="h-4 w-4" />
+                </Button>
+              );
+            })}
+          </div>
         </ScrollArea>
       </nav>
 
