@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,6 +26,7 @@ interface RoleBasedLayoutProps {
 
 export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
   const { profile, signOut } = useAuth();
+  const location = useLocation();
 
   if (!profile) {
     return (
@@ -111,7 +113,9 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
       </header>
 
       {/* Main content area */}
-      <main className="container mx-auto p-4 max-w-7xl">{children}</main>
+      <main className="container mx-auto p-4 max-w-7xl mb-20 lg:mb-0">
+        {children}
+      </main>
 
       {/* Mobile bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t z-50 lg:hidden">
@@ -141,13 +145,23 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
           <nav className="space-y-2">
             {config.navigation.map((item) => {
               const Icon = item.icon;
+              const isActive = location.pathname === item.path;
               return (
                 <Button
                   key={item.path}
                   variant="ghost"
-                  className="w-full justify-start gap-3"
+                  className={`nav-item w-full justify-start gap-3 ${
+                    isActive
+                      ? "nav-item-active"
+                      : "hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                  onClick={() => (window.location.href = item.path)}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon
+                    className={`h-4 w-4 ${
+                      isActive ? "text-primary-foreground" : ""
+                    }`}
+                  />
                   {item.label}
                 </Button>
               );

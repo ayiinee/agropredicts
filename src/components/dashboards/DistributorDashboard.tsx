@@ -16,6 +16,13 @@ import {
   BarChart3,
   DollarSign,
   Users,
+  Eye,
+  Target,
+  Shield,
+  Zap,
+  Leaf,
+  MapPin,
+  CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -88,64 +95,64 @@ export const DistributorDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Selamat Datang */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">
-            Selamat datang kembali, {profile?.full_name}!
+    <div className="section-spacing">
+      {/* Modern Welcome Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold gradient-text">
+            Halo, {profile?.full_name}! 🚚
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             Kelola bisnis pasokan pertanian Anda
           </p>
         </div>
-        <Button className="w-fit">
-          <Plus className="h-4 w-4 mr-2" />
+        <Button className="btn-primary">
+          <Plus className="h-5 w-5 mr-2" />
           Tambah Produk
         </Button>
       </div>
 
-      {/* Ringkasan Statistik */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Package className="h-5 w-5 text-primary" />
+      {/* Modern Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container-primary">
+                <Package className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-l font-bold">{stats.totalProducts}</p>
-                <p className="text-sm text-muted-foreground">Total Produk</p>
+                <p className="text-2xl font-bold gradient-text">{stats.totalProducts}</p>
+                <p className="text-sm text-muted-foreground font-medium">Total Produk</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <ShoppingCart className="h-5 w-5 text-blue-500" />
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container bg-gradient-to-br from-blue-100 to-cyan-100">
+                <ShoppingCart className="h-6 w-6 text-blue-500" />
               </div>
               <div>
-                <p className="text-l font-bold">{stats.activeOrders}</p>
-                <p className="text-sm text-muted-foreground">Pesanan Aktif</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.activeOrders}</p>
+                <p className="text-sm text-muted-foreground font-medium">Pesanan Aktif</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <DollarSign className="h-5 w-5 text-green-500" />
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container bg-gradient-to-br from-green-100 to-emerald-100">
+                <DollarSign className="h-6 w-6 text-green-500" />
               </div>
               <div>
-                <p className="text-l font-bold">
+                <p className="text-2xl font-bold text-green-600">
                   Rp{stats.monthlyRevenue.toLocaleString()}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground font-medium">
                   Pendapatan Bulanan
                 </p>
               </div>
@@ -153,48 +160,59 @@ export const DistributorDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-500/10 rounded-lg">
-                <AlertTriangle className="h-5 w-5 text-orange-500" />
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container bg-gradient-to-br from-orange-100 to-yellow-100">
+                <AlertTriangle className="h-6 w-6 text-orange-500" />
               </div>
               <div>
-                <p className="text-l font-bold">{stats.lowStockItems}</p>
-                <p className="text-sm text-muted-foreground">Rendah</p>
+                <p className="text-2xl font-bold text-orange-600">{stats.lowStockItems}</p>
+                <p className="text-sm text-muted-foreground font-medium">Stok Rendah</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Peringatan Stok Rendah */}
+      {/* Modern Low Stock Alert */}
       {lowStockProducts.length > 0 && (
-        <Card>
+        <Card className="unified-card card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-orange-500" />
-              Peringatan Stok Rendah
+            <CardTitle className="flex items-center gap-3">
+              <div className="icon-container bg-gradient-to-br from-orange-100 to-yellow-100">
+                <AlertTriangle className="h-6 w-6 text-orange-500" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">Peringatan Stok Rendah</h2>
+                <p className="text-sm text-muted-foreground font-normal">Produk yang perlu diisi ulang</p>
+              </div>
             </CardTitle>
-            <CardDescription>Produk yang perlu diisi ulang</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {lowStockProducts.map((product, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 border rounded-lg"
+                  className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 alert-warning"
                 >
-                  <div>
-                    <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {product.stock} {product.unit} tersisa (min:{" "}
-                      {product.minStock})
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className="icon-container">
+                        <Package className="h-4 w-4 text-[#31B57F]" />
+                      </div>
+                      <p className="font-semibold text-lg">{product.name}</p>
+                    </div>
+                    <p className="text-sm text-orange-700 font-medium">
+                      {product.stock} {product.unit} tersisa (min: {product.minStock})
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="destructive">Rendah</Badge>
-                    <Button size="sm" variant="outline">
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1">
+                      Rendah
+                    </Badge>
+                    <Button size="sm" className="btn-secondary">
+                      <Zap className="h-4 w-4 mr-2" />
                       Pesan Ulang
                     </Button>
                   </div>
@@ -206,12 +224,19 @@ export const DistributorDashboard = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pesanan Terbaru */}
-        <Card>
+        {/* Modern Recent Orders */}
+        <Card className="unified-card card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5" />
-              Pesanan Terbaru
+            <CardTitle className="flex items-center gap-3">
+              <div className="icon-container-primary">
+                <ShoppingCart className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">Pesanan Terbaru</h2>
+                <p className="text-sm text-muted-foreground font-normal">
+                  Daftar pesanan terbaru dari petani
+                </p>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -219,64 +244,80 @@ export const DistributorDashboard = () => {
               {recentOrders.map((order) => (
                 <div
                   key={order.id}
-                  className="flex items-center justify-between p-3 border rounded-lg"
+                  className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 card-hover"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">{order.id}</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="icon-container">
+                        <Leaf className="h-4 w-4 text-[#31B57F]" />
+                      </div>
+                      <p className="font-semibold text-lg">{order.id}</p>
                       <div
-                        className={`w-2 h-2 rounded-full ${getStatusColor(
+                        className={`w-3 h-3 rounded-full ${getStatusColor(
                           order.status
                         )}`}
                       ></div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-gray-600 font-medium">
                       {order.farmer}
                     </p>
-                    <p className="text-sm">
+                    <p className="text-sm text-gray-700">
                       {order.product} - {order.quantity}
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold">
+                  <div className="text-right space-y-2">
+                    <p className="font-bold text-lg text-green-600">
                       Rp{order.total.toLocaleString()}
                     </p>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge className="bg-gradient-to-r from-[#31B57F] to-[#27A06F] text-white px-3 py-1">
                       {order.status}
                     </Badge>
                   </div>
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4">
+            <Button className="btn-primary w-full mt-6">
+              <Eye className="h-5 w-5 mr-2" />
               Lihat Semua Pesanan
             </Button>
           </CardContent>
         </Card>
 
-        {/* Produk Terlaris */}
-        <Card>
+        {/* Modern Top Products */}
+        <Card className="unified-card card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Produk Terlaris
+            <CardTitle className="flex items-center gap-3">
+              <div className="icon-container-primary">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">Produk Terlaris</h2>
+                <p className="text-sm text-muted-foreground font-normal">
+                  Produk dengan penjualan tertinggi
+                </p>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                <div key={index} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 card-hover">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className="icon-container">
+                        <Target className="h-4 w-4 text-[#31B57F]" />
+                      </div>
+                      <p className="font-semibold text-lg">{product.name}</p>
+                    </div>
+                    <p className="text-sm text-gray-600 font-medium">
                       {product.sales} unit terjual
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold">
+                  <div className="text-right space-y-1">
+                    <p className="font-bold text-lg text-green-600">
                       Rp{product.revenue.toLocaleString()}
                     </p>
-                    <p className="text-sm text-muted-foreground">Pendapatan</p>
+                    <p className="text-sm text-gray-600 font-medium">Pendapatan</p>
                   </div>
                 </div>
               ))}

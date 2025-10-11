@@ -18,6 +18,12 @@ import {
   MessageCircle,
   CheckCircle,
   Clock,
+  Eye,
+  Target,
+  Shield,
+  Zap,
+  Leaf,
+  MapPin,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -158,48 +164,48 @@ export const CooperativeDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">
-            Selamat datang kembali, {profile?.full_name}!
+    <div className="section-spacing">
+      {/* Modern Welcome Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold gradient-text">
+            Halo, {profile?.full_name}! 🌾
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             Kelola operasi koperasi dan jaringan petani Anda
           </p>
         </div>
-        <Button className="w-fit">
-          <MessageCircle className="h-4 w-4 mr-2" />
+        <Button className="btn-primary">
+          <MessageCircle className="h-5 w-5 mr-2" />
           Kirim Pengumuman
         </Button>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Users className="h-5 w-5 text-blue-500" />
+      {/* Modern Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container-primary">
+                <Users className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-l font-bold">{stats.totalFarmers}</p>
-                <p className="text-sm text-muted-foreground">Total Petani</p>
+                <p className="text-2xl font-bold gradient-text">{stats.totalFarmers}</p>
+                <p className="text-sm text-muted-foreground font-medium">Total Petani</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-500/10 rounded-lg">
-                <Package className="h-5 w-5 text-orange-500" />
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container bg-gradient-to-br from-orange-100 to-yellow-100">
+                <Package className="h-6 w-6 text-orange-500" />
               </div>
               <div>
-                <p className="text-l font-bold">{stats.pendingDeliveries}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-2xl font-bold text-orange-600">{stats.pendingDeliveries}</p>
+                <p className="text-sm text-muted-foreground font-medium">
                   Pengiriman Tertunda
                 </p>
               </div>
@@ -207,17 +213,17 @@ export const CooperativeDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <DollarSign className="h-5 w-5 text-green-500" />
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container bg-gradient-to-br from-green-100 to-emerald-100">
+                <DollarSign className="h-6 w-6 text-green-500" />
               </div>
               <div>
-                <p className="text-l font-bold">
+                <p className="text-2xl font-bold text-green-600">
                   {formatRupiah(stats.monthlyRevenue)}
                 </p>
-                <p className="text-sm text-muted-foreground wra">
+                <p className="text-sm text-muted-foreground font-medium">
                   Pendapatan Bulanan
                 </p>
               </div>
@@ -225,89 +231,99 @@ export const CooperativeDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-500/10 rounded-lg">
-                <Users className="h-5 w-5 text-purple-500" />
+        <Card className="unified-card card-hover">
+          <CardContent className="card-spacing">
+            <div className="flex items-center gap-4">
+              <div className="icon-container bg-gradient-to-br from-purple-100 to-violet-100">
+                <Users className="h-6 w-6 text-purple-500" />
               </div>
               <div>
-                <p className="text-l font-bold">{stats.activeGroups}</p>
-                <p className="text-sm text-muted-foreground">Kelompok Aktif</p>
+                <p className="text-2xl font-bold text-purple-600">{stats.activeGroups}</p>
+                <p className="text-sm text-muted-foreground font-medium">Kelompok Aktif</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Pending Farmer Products */}
-      <Card>
+      {/* Modern Pending Farmer Products */}
+      <Card className="unified-card card-hover">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            Pengiriman Petani Tertunda
+          <CardTitle className="flex items-center gap-3">
+            <div className="icon-container-primary">
+              <Package className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Pengiriman Petani Tertunda</h2>
+              <p className="text-sm text-muted-foreground font-normal">
+                Tinjau dan setujui hasil panen yang masuk
+              </p>
+            </div>
           </CardTitle>
-          <CardDescription>
-            Tinjau dan setujui hasil panen yang masuk
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {pendingProducts.map((product) => {
               const StatusIcon = getStatusIcon(product.status);
               return (
-                <div key={product.id} className="border rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold">{product.product}</h3>
-                        <Badge className={getStatusColor(product.status)}>
+                <div key={product.id} className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 card-hover">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="icon-container">
+                          <Leaf className="h-5 w-5 text-[#31B57F]" />
+                        </div>
+                        <h3 className="font-semibold text-lg">{product.product}</h3>
+                        <Badge className={`${getStatusColor(product.status)} px-3 py-1`}>
                           <StatusIcon className="h-3 w-3 mr-1" />
                           {product.status}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-gray-600 font-medium">
                         Dari: {product.farmer}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg">
+                    <div className="text-right space-y-1">
+                      <p className="font-bold text-xl text-green-600">
                         {formatRupiah(product.totalValue)}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-gray-600">
                         {formatRupiah(product.pricePerKg)}/kg
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
-                    <div>
-                      <p className="text-muted-foreground">Kuantitas</p>
-                      <p className="font-medium">{product.quantity}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
+                    <div className="p-3 bg-white/60 rounded-lg">
+                      <p className="text-gray-600 font-medium">Kuantitas</p>
+                      <p className="font-bold text-gray-800">{product.quantity}</p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">Kualitas</p>
-                      <p className="font-medium">{product.quality}</p>
+                    <div className="p-3 bg-white/60 rounded-lg">
+                      <p className="text-gray-600 font-medium">Kualitas</p>
+                      <p className="font-bold text-gray-800">{product.quality}</p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">
-                        Tanggal Pengiriman
-                      </p>
-                      <p className="font-medium">{product.deliveryDate}</p>
+                    <div className="p-3 bg-white/60 rounded-lg">
+                      <p className="text-gray-600 font-medium">Tanggal Pengiriman</p>
+                      <p className="font-bold text-gray-800">{product.deliveryDate}</p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">ID Pesanan</p>
-                      <p className="font-medium">{product.id}</p>
+                    <div className="p-3 bg-white/60 rounded-lg">
+                      <p className="text-gray-600 font-medium">ID Pesanan</p>
+                      <p className="font-bold text-gray-800">{product.id}</p>
                     </div>
                   </div>
 
                   {product.status === "pending" && (
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
+                    <div className="flex gap-3">
+                      <Button size="sm" variant="outline" className="btn-secondary">
+                        <Target className="h-4 w-4 mr-2" />
                         Negosiasi Harga
                       </Button>
-                      <Button size="sm">Terima</Button>
+                      <Button size="sm" className="btn-primary">
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Terima
+                      </Button>
                       <Button size="sm" variant="destructive">
+                        <Shield className="h-4 w-4 mr-2" />
                         Tolak
                       </Button>
                     </div>
@@ -324,35 +340,47 @@ export const CooperativeDashboard = () => {
         {/* Farmer Groups */}
         
 
-        {/* Recent Announcements */}
-        <Card>
+        {/* Modern Recent Announcements */}
+        <Card className="unified-card card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5" />
-              Pengumuman Terbaru
+            <CardTitle className="flex items-center gap-3">
+              <div className="icon-container-primary">
+                <MessageCircle className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">Pengumuman Terbaru</h2>
+                <p className="text-sm text-muted-foreground font-normal">
+                  Informasi penting untuk anggota koperasi
+                </p>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentAnnouncements.map((announcement) => (
-                <div key={announcement.id} className="border rounded-lg p-4">
+                <div key={announcement.id} className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-200 card-hover">
                   <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1">
-                        {announcement.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="icon-container">
+                          <Zap className="h-4 w-4 text-[#31B57F]" />
+                        </div>
+                        <h3 className="font-semibold text-lg">
+                          {announcement.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-gray-600 font-medium">
                         {announcement.date}
                       </p>
                     </div>
                     <Badge
-                      variant={
+                      className={`px-3 py-1 ${
                         announcement.priority === "high"
-                          ? "destructive"
+                          ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
                           : announcement.priority === "medium"
-                          ? "default"
-                          : "secondary"
-                      }
+                          ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white"
+                          : "bg-gradient-to-r from-gray-500 to-slate-500 text-white"
+                      }`}
                     >
                       {announcement.priority}
                     </Badge>
@@ -360,7 +388,8 @@ export const CooperativeDashboard = () => {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4">
+            <Button className="btn-primary w-full mt-6">
+              <Eye className="h-5 w-5 mr-2" />
               Lihat Semua Pengumuman
             </Button>
           </CardContent>
