@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { RoleBasedLayout } from "@/components/RoleBasedLayout";
 import {
   Card,
@@ -17,6 +18,7 @@ import {
   CameraIcon,
   StopCircle,
   UploadCloud,
+  AlertTriangle,
 } from "lucide-react";
 
 // Data dummy hasil analisis
@@ -29,9 +31,16 @@ const dummyAnalysis = [
 export default function PestDetection() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Keep a ref to the active MediaStream so we can stop it reliably
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const [streaming, setStreaming] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  // overlay analysis state
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const analysisTimerRef = useRef<number | null>(null);
+  const navigate = useNavigate();
 
   // Ref untuk input file
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,7 +51,8 @@ export default function PestDetection() {
       const reader = new FileReader();
       reader.onload = (ev) => {
         setCapturedImage(ev.target?.result as string);
-        setShowAnalysis(true);
+        // start overlay analysis
+        startOverlayAnalysis();
         stopCamera();
       };
       reader.readAsDataURL(file);
@@ -57,6 +67,12 @@ export default function PestDetection() {
   const handleReset = () => {
     setCapturedImage(null);
     setShowAnalysis(false);
+    setIsAnalyzing(false);
+    setAnalysisProgress(0);
+    if (analysisTimerRef.current) {
+      window.clearInterval(analysisTimerRef.current);
+      analysisTimerRef.current = null;
+    }
     stopCamera();
   };
 
@@ -93,9 +109,18 @@ export default function PestDetection() {
         video: { facingMode: { ideal: "environment" } },
         audio: false,
       });
+      // store stream in ref so other functions can stop it
+      mediaStreamRef.current = stream;
       if (videoRef.current) {
+        // assign stream and play
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        // ensure any previous playback is reset
+        try {
+          await videoRef.current.play();
+        } catch (err) {
+          // play can fail if not in user gesture; still treat as streaming available
+          console.warn("video play() failed", err);
+        }
         setStreaming(true);
       }
     } catch (e) {
@@ -105,9 +130,40 @@ export default function PestDetection() {
   };
 
   const stopCamera = () => {
-    const mediaStream = videoRef.current?.srcObject as MediaStream | null;
-    mediaStream?.getTracks().forEach((t) => t.stop());
-    if (videoRef.current) videoRef.current.srcObject = null;
+    // Prefer stopping the stored stream. This handles the case where the
+    // video element may have been removed from the DOM but the tracks still run.
+    const stream =
+      mediaStreamRef.current ??
+      (videoRef.current?.srcObject as MediaStream | null);
+    if (stream) {
+      try {
+        stream.getTracks().forEach((t) => {
+          try {
+            t.stop();
+          } catch (err) {
+            console.warn("Failed to stop track", err);
+          }
+        });
+      } catch (err) {
+        console.warn("Error while stopping media stream", err);
+      }
+    }
+
+    // Clear refs and video element
+    mediaStreamRef.current = null;
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause();
+      } catch (err) {
+        // ignore
+      }
+      try {
+        // detach stream from video element
+        videoRef.current.srcObject = null;
+      } catch (err) {
+        console.warn("Failed to clear video srcObject", err);
+      }
+    }
     setStreaming(false);
   };
 
@@ -120,9 +176,40 @@ export default function PestDetection() {
         context.drawImage(videoRef.current, 0, 0);
         const imageData = canvasRef.current.toDataURL("image/png");
         setCapturedImage(imageData);
-        setShowAnalysis(true);
+        // show overlay analysis on top of the captured image
+        startOverlayAnalysis();
+        // Stop camera right after capturing
+        stopCamera();
       }
     }
+  };
+
+  const startOverlayAnalysis = () => {
+    // simulate 5s analysis with progress updates
+    setShowAnalysis(false);
+    setIsAnalyzing(true);
+    setAnalysisProgress(0);
+    const totalMs = 5000;
+    const stepMs = 100; // 50 steps => smooth enough
+    const steps = Math.ceil(totalMs / stepMs);
+    let current = 0;
+    if (analysisTimerRef.current) {
+      window.clearInterval(analysisTimerRef.current);
+      analysisTimerRef.current = null;
+    }
+    analysisTimerRef.current = window.setInterval(() => {
+      current += 1;
+      const pct = Math.min(100, Math.round((current / steps) * 100));
+      setAnalysisProgress(pct);
+      if (current >= steps) {
+        if (analysisTimerRef.current) {
+          window.clearInterval(analysisTimerRef.current);
+          analysisTimerRef.current = null;
+        }
+        setIsAnalyzing(false);
+        setShowAnalysis(true);
+      }
+    }, stepMs);
   };
 
   return (
@@ -152,6 +239,25 @@ export default function PestDetection() {
                   muted
                   className="h-full w-full object-cover"
                 />
+                {/* Show camera-inactive instruction centered over the media area when camera is off */}
+                {!streaming && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center">
+                    <div className="bg-white p-4 rounded-md shadow text-center w-3/4 max-w-sm">
+                      <div className="text-sm font-semibold">
+                        Kamera belum aktif
+                      </div>
+                      <div className="text-xs text-muted-foreground mb-2">
+                        Tekan "Mulai Kamera" untuk menyalakan kamera dan ambil
+                        foto
+                      </div>
+                      <div>
+                        <Button size="sm" onClick={startCamera}>
+                          <Camera className="h-4 w-4" /> Mulai Kamera
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {streaming && (
                   <button
                     onClick={stopCamera}
@@ -163,14 +269,58 @@ export default function PestDetection() {
                     <StopCircle className="h-5 w-5" />
                   </button>
                 )}
+
+                {/* Overlay during analysis when capturing from camera */}
+                {isAnalyzing && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center">
+                    <div className="bg-black bg-opacity-50 text-white rounded-md p-4 w-3/4 max-w-sm text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="text-lg font-semibold">
+                          Analisis Gambar
+                        </div>
+                        <div className="w-full bg-white bg-opacity-20 h-2 rounded overflow-hidden">
+                          <div
+                            className="h-full bg-white transition-all"
+                            style={{ width: `${analysisProgress}%` }}
+                          />
+                        </div>
+                        <div className="text-xs opacity-80">
+                          {analysisProgress}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="aspect-video w-full bg-muted rounded-lg overflow-hidden">
+              <div className="aspect-video w-full bg-muted rounded-lg overflow-hidden relative">
                 <img
                   src={capturedImage}
                   alt="Hasil Foto"
                   className="w-full h-full object-cover"
                 />
+
+                {/* Overlay during analysis when using uploaded or captured image */}
+                {isAnalyzing && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center">
+                    <div className="bg-black bg-opacity-50 text-white rounded-md p-4 w-3/4 max-w-sm text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="text-lg font-semibold">
+                          Analisis Gambar
+                        </div>
+                        <div className="w-full bg-white bg-opacity-20 h-2 rounded overflow-hidden">
+                          <div
+                            className="h-full bg-white transition-all"
+                            style={{ width: `${analysisProgress}%` }}
+                          />
+                        </div>
+                        <div className="text-xs opacity-80">
+                          {analysisProgress}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -219,76 +369,123 @@ export default function PestDetection() {
                 >
                   <UploadCloud className="h-4 w-4" /> Upload Gambar
                 </Button>
-          
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Hasil Analisis Foto</CardTitle>
-            <CardDescription>
-              Analisis berdasarkan foto yang diambil
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {/* Kondisi alert */}
-            {!showAnalysis ? (
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertTitle>Status</AlertTitle>
-                <AlertDescription>
-                  {streaming
-                    ? "Kamera aktif. Arahkan ke daun/area yang dicurigai untuk inspeksi visual."
-                    : "Kamera belum aktif. Tekan Mulai Kamera untuk memulai."}
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <>
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertTitle>Status</AlertTitle>
-                  <AlertDescription>
-                    Foto berhasil diambil. Berikut adalah analisis hama
-                    berdasarkan gambar.
-                  </AlertDescription>
-                </Alert>
-
-                <Separator />
-
-                {/* Dummy analisis hanya muncul kalau showAnalysis true */}
-                <div className="space-y-2">
-                  {dummyAnalysis.map((item, idx) => (
+        {showAnalysis && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Hasil Analisis Foto</CardTitle>
+              <CardDescription>
+                Analisis berdasarkan foto yang diambil
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {/* Summary + action buttons */}
+              <div className="mb-3">
+                {(() => {
+                  const sorted = [...dummyAnalysis].sort(
+                    (a, b) => b.probability - a.probability
+                  );
+                  const top = sorted[0];
+                  const isCritical =
+                    top.severity === "tinggi" || top.probability >= 80;
+                  return (
                     <div
-                      key={idx}
-                      className="flex justify-between items-center border p-2 rounded-md"
+                      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-md border ${
+                        isCritical
+                          ? "bg-red-50 border-red-300 text-red-800"
+                          : "bg-white border-slate-200"
+                      }`}
                     >
-                      <div>
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Kemungkinan: {item.probability}% | Keparahan:{" "}
-                          {item.severity}
-                        </p>
+                      <div className="flex items-center gap-3">
+                        {isCritical && (
+                          <AlertTriangle className="h-6 w-6 text-red-600 animate-pulse" />
+                        )}
+                        <div>
+                          <div className="text-sm text-muted-foreground">
+                            Deteksi teratas
+                          </div>
+                          <div className="text-lg font-semibold">
+                            {top.probability}% {top.name} terdeteksi
+                          </div>
+                          {isCritical ? (
+                            <div className="text-sm font-medium">
+                              Segera ambil tindakan untuk mencegah penyebaran.
+                            </div>
+                          ) : (
+                            <div className="text-xs text-muted-foreground">
+                              Periksa rincian hasil dan bagikan ke kelompok tani
+                              jika perlu.
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <Badge
-                        variant={
-                          item.severity === "tinggi"
-                            ? "destructive"
-                            : item.severity === "sedang"
-                            ? "default"
-                            : "secondary"
-                        }
-                      >
-                        {item.severity}
-                      </Badge>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={async () => {
+                            const shareText = `${top.probability}% ${top.name} terdeteksi pada tanaman. Lihat di AgroPredict.`;
+                            if ((navigator as any).share) {
+                              try {
+                                await (navigator as any).share({
+                                  title: "Peringatan Hama",
+                                  text: shareText,
+                                  url: window.location.href,
+                                });
+                                return;
+                              } catch (err) {
+                                console.warn("Share failed", err);
+                              }
+                            }
+                            navigate("/groups");
+                          }}
+                        >
+                          Bagikan ke Kelompok
+                        </Button>
+
+                        <Button onClick={() => navigate("/treatment")}>
+                          Cara Mengatasi
+                        </Button>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+                  );
+                })()}
+              </div>
+
+              {/* Dummy analisis hanya muncul kalau showAnalysis true */}
+              <div className="space-y-2">
+                {dummyAnalysis.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center border p-2 rounded-md"
+                  >
+                    <div>
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Kemungkinan: {item.probability}% | Keparahan:{" "}
+                        {item.severity}
+                      </p>
+                    </div>
+                    <Badge
+                      variant={
+                        item.severity === "tinggi"
+                          ? "destructive"
+                          : item.severity === "sedang"
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
+                      {item.severity}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </RoleBasedLayout>
   );

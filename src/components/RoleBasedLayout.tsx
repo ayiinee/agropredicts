@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -72,6 +72,7 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
 
   const config = roleConfig[profile.role];
   const RoleIcon = config.icon;
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
@@ -123,16 +124,17 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
           <div className="flex items-center p-2 shadow-sm w-full">
             {config.navigation.map((item) => {
               const Icon = item.icon;
+              const isActive = location.pathname === item.path;
               return (
-                <Button
+                <button
                   key={item.path}
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
-                  onClick={() => (window.location.href = item.path)}
+                  onClick={() => navigate(item.path)}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 mobile-nav-item ${isActive ? 'mobile-nav-item-active' : ''}`}
                 >
-                  <Icon className="h-4 w-4" />
-                </Button>
+                  <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-muted-foreground'}`} />
+                  <span className="text-xs mt-1">{item.label}</span>
+                </button>
               );
             })}
           </div>

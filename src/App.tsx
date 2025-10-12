@@ -19,6 +19,8 @@ import PestDetection from "./pages/PestDetection";
 import FarmerProducts from "./pages/FarmerProducts";
 import GroupManagement from "./pages/GroupManagement";
 import CooperativeAnalytics from "./pages/CooperativeAnalytics";
+import Treatment from "./pages/Treatment";
+import TreatmentDetail from "./pages/TreatmentDetail";
 
 const queryClient = new QueryClient();
 
@@ -31,101 +33,117 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
                 <ProtectedRoute>
                   <Index />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/fields" 
+            <Route
+              path="/fields"
               element={
                 <ProtectedRoute>
                   <Fields />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/field/:fieldId" 
+            <Route
+              path="/field/:fieldId"
               element={
                 <ProtectedRoute>
                   <FieldDetail />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/marketplace" 
+            <Route
+              path="/marketplace"
               element={
                 <ProtectedRoute>
                   <Marketplace />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/groups" 
+            <Route
+              path="/groups"
               element={
                 <ProtectedRoute>
                   <Groups />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/farmer-products" 
+            <Route
+              path="/farmer-products"
               element={
                 <ProtectedRoute>
                   <FarmerProducts />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/group" 
+            <Route
+              path="/group"
               element={
                 <ProtectedRoute>
                   <GroupManagement />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/analytics" 
+            <Route
+              path="/analytics"
               element={
                 <ProtectedRoute>
                   <CooperativeAnalytics />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/products" 
+            <Route
+              path="/products"
               element={
                 <ProtectedRoute>
                   <Products />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/orders" 
+            <Route
+              path="/orders"
               element={
                 <ProtectedRoute>
                   <Orders />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/analytics" 
+            <Route
+              path="/analytics"
               element={
                 <ProtectedRoute>
                   <Analytics />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/pest-detection" 
+            <Route
+              path="/pest-detection"
               element={
                 <ProtectedRoute>
                   <PestDetection />
                 </ProtectedRoute>
-              } 
+              }
+            />
+            <Route
+              path="/treatment"
+              element={
+                <ProtectedRoute>
+                  <Treatment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/treatment/:id"
+              element={
+                <ProtectedRoute>
+                  <TreatmentDetail />
+                </ProtectedRoute>
+              }
             />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
