@@ -93,6 +93,9 @@ export default function MapWithAlerts({
         radiusM: 250,
         crop: "Jagung",
         pest: "Ulat",
+        reporter: "Budi Santoso",
+        infectionChance: 35,
+        severity: 25,
       },
       {
         id: 2,
@@ -103,6 +106,9 @@ export default function MapWithAlerts({
         radiusM: 420,
         crop: "Padi",
         pest: "Wereng",
+        reporter: "Sari Wijaya",
+        infectionChance: 68,
+        severity: 55,
       },
       {
         id: 3,
@@ -113,6 +119,9 @@ export default function MapWithAlerts({
         radiusM: 800,
         crop: "Kedelai",
         pest: "Thrips",
+        reporter: "Wawan Kurniawan",
+        infectionChance: 85,
+        severity: 78,
       },
     ];
 
@@ -139,6 +148,35 @@ export default function MapWithAlerts({
     const refs: any[] = [];
 
     alerts.forEach((a: any) => {
+      // Create three concentric circles for each alert - all red with different opacity
+      // Outer circle - lightest red (smaller size)
+      const outerCircle = L.circle([a.lat, a.lng], {
+        radius: a.radiusM * 1.2,
+        color: "#ff4e4e",
+        fillColor: "#ff4e4e",
+        weight: 1,
+        fillOpacity: 0.1,
+      }).addTo(map);
+
+      // Middle circle - medium red (smaller size)
+      const middleCircle = L.circle([a.lat, a.lng], {
+        radius: a.radiusM * 0.7,
+        color: "#ff4e4e",
+        fillColor: "#ff4e4e",
+        weight: 1,
+        fillOpacity: 0.25,
+      }).addTo(map);
+
+      // Inner circle - darkest red (smaller size)
+      const innerCircle = L.circle([a.lat, a.lng], {
+        radius: a.radiusM * 0.3,
+        color: "#ff4e4e",
+        fillColor: "#ff4e4e",
+        weight: 1,
+        fillOpacity: 0.4,
+      }).addTo(map);
+
+      // Create marker on top of circles
       const marker = L.circleMarker([a.lat, a.lng], {
         radius: 8,
         fillColor:
@@ -149,50 +187,75 @@ export default function MapWithAlerts({
         fillOpacity: 1,
       }).addTo(map);
 
-      const circle = L.circle([a.lat, a.lng], {
-        radius: a.radiusM,
-        color:
-          a.percent >= 75
-            ? "#ff4e4e66"
-            : a.percent >= 40
-            ? "#ffb84e66"
-            : "#31B57F66",
-        fillColor:
-          a.percent >= 75
-            ? "#ff4e4e33"
-            : a.percent >= 40
-            ? "#ffb84e33"
-            : "#31B57F33",
-        weight: 1,
-        fillOpacity: 0.12,
-      }).addTo(map);
+      const tooltipContent = `<div style="min-width: 180px; font-family: system-ui, -apple-system, sans-serif; line-height: 1.3;">
+        <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #1f2937;">${a.name}</div>
+        <div style="margin-bottom: 3px; font-size: 12px;">
+          <span style="color: #6b7280;">🐛</span> <strong>Hama:</strong> ${a.pest}
+        </div>
+        <div style="margin-bottom: 3px; font-size: 12px;">
+          <span style="color: #6b7280;">🌾</span> <strong>Tanaman:</strong> ${a.crop}
+        </div>
+        <div style="margin-bottom: 3px; font-size: 12px;">
+          <span style="color: #6b7280;">👤</span> <strong>Pelapor:</strong> ${a.reporter}
+        </div>
+        <div style="margin-bottom: 3px; font-size: 12px;">
+          <span style="color: #6b7280;">📊</span> <strong>Infeksi:</strong> ${a.infectionChance}%
+        </div>
+        <div style="margin-bottom: 3px; font-size: 12px;">
+          <span style="color: #6b7280;">💢</span> <strong>Keparahan:</strong> ${a.severity}%
+        </div>
+        <div style="margin-bottom: 3px; font-size: 12px;">
+          <span style="color: #6b7280;">📈</span> <strong>Tertular:</strong> ${a.percent}%
+        </div>
+        <div style="color: #6b7280; font-size: 11px;">
+          Radius: ${a.radiusM} m
+        </div>
+      </div>`;
 
-      marker.bindPopup(
-        `<strong>${a.name}</strong><br/>Tanaman: ${a.crop}<br/>Perkiraan tertular: ${a.percent}%<br/>Hama: ${a.pest}<br/>Radius: ${a.radiusM} m`
-      );
+      marker.bindTooltip(tooltipContent, {
+        direction: "right",
+        offset: [8, 0],
+        permanent: false,
+        className: 'custom-tooltip'
+      });
 
-      // hover interactions
+      // hover interactions - enhance all circles on hover and show tooltip
       marker.on("mouseover", () => {
         setHoveredAlert(a);
-        circle.setStyle({ weight: 2, fillOpacity: 0.25 });
+        // Enhance all circles on hover with smooth transitions
+        outerCircle.setStyle({ weight: 2, fillOpacity: 0.15 });
+        middleCircle.setStyle({ weight: 2, fillOpacity: 0.35 });
+        innerCircle.setStyle({ weight: 2, fillOpacity: 0.5 });
+        // Slightly increase marker size (radius +2)
         marker.setStyle({ radius: 10 });
-        marker.openPopup();
+        // Open tooltip on hover
+        marker.openTooltip();
       });
       marker.on("mouseout", () => {
         setHoveredAlert(null);
-        circle.setStyle({ weight: 1, fillOpacity: 0.12 });
+        // Reset all circles to original opacity
+        outerCircle.setStyle({ weight: 1, fillOpacity: 0.1 });
+        middleCircle.setStyle({ weight: 1, fillOpacity: 0.25 });
+        innerCircle.setStyle({ weight: 1, fillOpacity: 0.4 });
+        // Reset marker size
         marker.setStyle({ radius: 8 });
-        marker.closePopup();
+        // Close tooltip on mouseout
+        marker.closeTooltip();
       });
 
-      // if user farm is inside circle, add a quick flag
+      // Check if user farm is inside any of the danger zones
       const distanceToFarm = map.distance(
         [a.lat, a.lng],
         [userFarm.lat, userFarm.lng]
       );
-      const farmInside = distanceToFarm <= a.radiusM;
+      const farmInside = distanceToFarm <= a.radiusM * 1.2; // Check against outer circle
 
-      refs.push({ alert: a, marker, circle, farmInside });
+      refs.push({ 
+        alert: a, 
+        marker, 
+        circles: { outer: outerCircle, middle: middleCircle, inner: innerCircle },
+        farmInside 
+      });
     });
 
     // store refs on instance for external access
@@ -209,13 +272,36 @@ export default function MapWithAlerts({
   }
 
   return (
-    <div
-      className={`${
-        expanded ? "fixed inset-0 z-50 bg-white" : "h-48"
-      } rounded-lg border bg-muted overflow-hidden`}
-    >
-      <div className="relative h-full">
-        <div ref={mapRef} className="w-full h-full" />
+    <>
+      <style>{`
+        .custom-tooltip {
+          background: rgba(255, 255, 255, 0.95) !important;
+          border: 1px solid #e5e7eb !important;
+          border-radius: 6px !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+          font-size: 12px !important;
+          padding: 8px !important;
+          max-width: 200px !important;
+          transition: opacity 0.2s ease-in-out !important;
+        }
+        .custom-tooltip::before {
+          border-left-color: rgba(255, 255, 255, 0.95) !important;
+        }
+        .leaflet-tooltip-right {
+          margin-left: 8px !important;
+        }
+        /* Smooth transitions for map elements */
+        .leaflet-interactive {
+          transition: all 0.2s ease-in-out !important;
+        }
+      `}</style>
+      <div
+        className={`${
+          expanded ? "fixed inset-0 z-50 bg-white" : "h-48"
+        } rounded-lg border bg-muted overflow-hidden`}
+      >
+        <div className="relative h-full">
+          <div ref={mapRef} className="w-full h-full" />
 
         {/* Expand / Back controls */}
         <div className="absolute top-2 right-2 flex gap-2">
@@ -277,5 +363,6 @@ export default function MapWithAlerts({
         </div>
       </div>
     </div>
+    </>
   );
 }

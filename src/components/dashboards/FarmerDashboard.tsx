@@ -117,14 +117,13 @@ export const FarmerDashboard = () => {
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 300000 // 5 minutes
+          maximumAge: 300000
         }
       );
     });
   };
 
-  // Fungsi untuk mendapatkan nama lokasi dari koordinat
-  const getLocationName = async (latitude: number, longitude: number): Promise<string> => {
+    const getLocationName = async (latitude: number, longitude: number): Promise<string> => {
     try {
       const response = await fetch(
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=id`
@@ -144,13 +143,11 @@ export const FarmerDashboard = () => {
     }
   };
 
-  // Fungsi untuk fetch weather data
   const fetchWeatherData = async (latitude?: number, longitude?: number) => {
     try {
       setWeatherLoading(true);
       setWeatherError(null);
 
-      // Gunakan koordinat user jika tersedia, atau fallback ke default
       const lat = latitude || userLocation?.latitude || -7.9797;
       const lon = longitude || userLocation?.longitude || 112.6304;
 

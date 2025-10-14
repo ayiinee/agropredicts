@@ -44,11 +44,7 @@ export default function Groups() {
                 <MapWithAlerts />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Deskripsi</Label>
-              <Input placeholder="cth. Wereng di sawah blok B" />
-              <Button className="w-full">Kirim Peringatan</Button>
-            </div>
+            
           </CardContent>
         </Card>
 
