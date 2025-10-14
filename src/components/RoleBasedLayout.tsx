@@ -129,10 +129,16 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 mobile-nav-item ${isActive ? 'mobile-nav-item-active' : ''}`}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 mobile-nav-item ${
+                    isActive ? "mobile-nav-item-active" : ""
+                  }`}
                 >
-                  <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-muted-foreground'}`} />
+                  <Icon
+                    className={`h-5 w-5 ${
+                      isActive ? "text-white" : "text-muted-foreground"
+                    }`}
+                  />
                   <span className="text-xs mt-1">{item.label}</span>
                 </button>
               );
