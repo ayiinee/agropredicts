@@ -40,11 +40,13 @@ export default function Groups() {
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-3">
             <div className="md:col-span-2">
-              <div className="h-48 rounded-lg border bg-muted overflow-hidden">
-                <MapWithAlerts />
+              <div className="rounded-lg border bg-muted overflow-hidden">
+                <MapWithAlerts
+                  heightClass="h-72"
+                  fullscreenTopOffsetClass="top-16 left-0 right-0 bottom-0"
+                />
               </div>
             </div>
-            
           </CardContent>
         </Card>
 
