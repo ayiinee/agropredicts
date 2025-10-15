@@ -123,7 +123,7 @@ export const FarmerDashboard = () => {
     });
   };
 
-    const getLocationName = async (latitude: number, longitude: number): Promise<string> => {
+  const getLocationName = async (latitude: number, longitude: number): Promise<string> => {
     try {
       const response = await fetch(
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=id`
@@ -420,7 +420,7 @@ export const FarmerDashboard = () => {
               <span className="text-sm font-medium">{weatherError}</span>
             </div>
           )}
-          {locationError && (
+            {locationError && (
             <div className="alert-warning p-3 rounded-xl flex items-center gap-2">
               <AlertTriangle className="h-4 w-4" />
               <span className="text-sm font-medium">{locationError}</span>
@@ -614,11 +614,11 @@ export const FarmerDashboard = () => {
               <div className="icon-container-primary">
                 <Sprout className="h-6 w-6 text-white" />
               </div>
-              <div>
+            <div>
                 <CardTitle className="text-xl font-bold">Lahan Saya</CardTitle>
                 <CardDescription className="text-sm">
-                  Ringkasan cepat lahan pertanian Anda
-                </CardDescription>
+                Ringkasan cepat lahan pertanian Anda
+              </CardDescription>
               </div>
             </div>
           </div>
@@ -679,8 +679,8 @@ export const FarmerDashboard = () => {
               onClick={() => navigate("/fields")}
             >
               <Eye className="h-5 w-5 mr-2" />
-              Lihat Semua Lahan
-            </Button>
+            Lihat Semua Lahan
+          </Button>
           </div>
         </CardContent>
       </Card>

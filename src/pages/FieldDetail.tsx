@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -22,101 +23,75 @@ import {
   Lightbulb,
   Sprout,
   Calendar,
+  RefreshCw,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
+import { useDiseasePrediction } from "@/hooks/useDiseasePrediction";
+import { SensorData } from "@/services/diseasePredictionApi";
 
 export default function FieldDetail() {
   const { fieldId } = useParams();
   const navigate = useNavigate();
 
-  // Mock data - in real app, this would come from API based on fieldId
+  // Mock field data - in real app, this would come from API based on fieldId
   const fieldData = {
     id: Number(fieldId),
     name: 'Ladang A - Jagung',
-      area: '5.2 hektar',
-      growth: 75,
-      harvestDate: '2024-09-15',
-      estimatedYield: '2,400 kg',
+    area: '5.2 hektar',
+    growth: 75,
+    harvestDate: '2024-09-15',
+    estimatedYield: '2,400 kg',
     cropType: "corn",
     plantingDate: "2024-03-15",
     alerts: 1,
   };
 
-  // Mock sensor data
-  const sensorData = {
-    temperature: { current: 24.5, status: "optimal", unit: "°C" },
-    humidity: { current: 68, status: "good", unit: "%" },
-    soilMoisture: { current: 45, status: "low", unit: "%" },
-    soilPH: { current: 6.8, status: "optimal", unit: "pH" },
-    // lightIntensity: { current: 850, status: "good", unit: "lux" },
-  };
+  // Initialize sensor data with some realistic values
+  const [sensorData, setSensorData] = useState<SensorData>({
+    temperature_C: 24.5,
+    humidity_percent: 68,
+    soil_moisture_percent: 45,
+  });
 
-  // Disease prediction data
-  const diseaseRisk = {
-    overall: 23,
-    risks: [
-      { name: "Hawar Daun", probability: 15, severity: "rendah" },
-      { name: "Tungro", probability: 8, severity: "sangat rendah" },
-      { name: "Akar Busuk", probability: 12, severity: "rendah" },
-    ],
-  };
+  // Use the disease prediction hook
+  const { 
+    prediction, 
+    loading, 
+    error, 
+    isApiAvailable, 
+    predictDisease, 
+    refreshPrediction 
+  } = useDiseasePrediction(sensorData);
 
-  // Treatment suggestions
-  const treatments = [
-    {
-      id: 1,
-      title: "Irigasi Diperlukan",
-      description:
-        "Kelembapan tanah berada di bawah tingkat optimal. Jadwalkan irigasi dalam 24 jam.",
-      priority: "high",
-      action: "Tingkatkan penyiraman sebesar 20%",
-    },
-    {
-      id: 2,
-      title: "Pengendalian Hama Preventif",
-      description:
-        "Terapkan langkah pencegahan untuk hama penggerek jagung berdasarkan pola musiman.",
-      priority: "medium",
-      action: "Gunakan pestisida organik",
-    },
-    {
-      id: 3,
-      title: "Pemantauan Nutrisi",
-      description:
-        "Tingkat pH berada pada kondisi optimal. Lanjutkan jadwal pemupukan saat ini.",
-      priority: "low",
-      action: "Pertahankan jadwal saat ini",
-    },
-  ];
+  // Simulate real-time sensor data updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Simulate sensor data changes
+      setSensorData(prev => ({
+        temperature_C: prev.temperature_C + (Math.random() - 0.5) * 2,
+        humidity_percent: Math.max(30, Math.min(95, prev.humidity_percent + (Math.random() - 0.5) * 4)),
+        soil_moisture_percent: Math.max(20, Math.min(80, prev.soil_moisture_percent + (Math.random() - 0.5) * 3)),
+      }));
+    }, 30000); // Update every 30 seconds
 
-  const getSensorIcon = (type: string) => {
-    switch (type) {
-      case "temperature":
-        return Thermometer;
-      case "humidity":
-        return Droplets;
-      case "soilMoisture":
-        return Droplets;
-      case "soilPH":
-        return Beaker;
-      case "lightIntensity":
-        return Sun;
-      default:
-        return Activity;
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update prediction when sensor data changes
+  useEffect(() => {
+    if (sensorData) {
+      predictDisease(sensorData);
     }
-  };
+  }, [sensorData, predictDisease]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "optimal":
-        return "text-green-600";
-      case "good":
-        return "text-blue-600";
-      case "low":
-        return "text-orange-600";
-      case "high":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
+  const getRiskDescription = (risk: number) => {
+    if (risk < 15) {
+      return "kondisi tanaman sehat, lanjutkan pemantauan rutin";
+    } else if (risk < 35) {
+      return "pantau dengan seksama dan terapkan tindakan pencegahan";
+    } else {
+      return "perlu tindakan segera untuk mencegah kerusakan tanaman";
     }
   };
 
@@ -146,9 +121,22 @@ export default function FieldDetail() {
             {fieldData.area} • Ditanam {fieldData.plantingDate}
           </p>
         </div>
-        {fieldData.alerts > 0 && (
-          <Badge variant="destructive">{fieldData.alerts} peringatan</Badge>
-        )}
+        <div className="flex items-center gap-2">
+          {isApiAvailable ? (
+            <Badge variant="outline" className="text-green-600">
+              <Wifi className="h-3 w-3 mr-1" />
+              ML API Online
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="text-orange-600">
+              <WifiOff className="h-3 w-3 mr-1" />
+              Offline Mode
+            </Badge>
+          )}
+          {fieldData.alerts > 0 && (
+            <Badge variant="destructive">{fieldData.alerts} peringatan</Badge>
+          )}
+        </div>
       </div>
 
       {/* Field Overview */}
@@ -185,59 +173,121 @@ export default function FieldDetail() {
       </Card>
 
       {/* Sensor Data */}
-      
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            Data Sensor Real-time
-          </CardTitle>
-          <CardDescription>
-            Pemantauan lingkungan secara langsung dari sensor lapangan
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5" />
+                Data Sensor Real-time
+              </CardTitle>
+              <CardDescription>
+                Pemantauan lingkungan secara langsung dari sensor lapangan
+              </CardDescription>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={refreshPrediction}
+              disabled={loading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
         </CardHeader>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Object.entries(sensorData).map(([key, data]) => {
-            const Icon = getSensorIcon(key);
-            // Choose color based on status
-            let bgColor = "bg-primary/10";
-            let iconColor = "text-primary";
-            if (data.status === "optimal") {
-              bgColor = "bg-green-500/10";
-              iconColor = "text-green-500";
-            } else if (data.status === "good") {
-              bgColor = "bg-blue-500/10";
-              iconColor = "text-blue-500";
-            } else if (data.status === "low") {
-              bgColor = "bg-orange-500/10";
-              iconColor = "text-orange-500";
-            } else if (data.status === "high") {
-              bgColor = "bg-red-500/10";
-              iconColor = "text-red-500";
-            }
-
-            return (
-              <Card key={key}>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+              <span>Memperbarui data sensor...</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Temperature */}
+              <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${bgColor}`}>
-                      <Icon className={`h-5 w-5 ${iconColor}`} />
+                    <div className="p-2 rounded-lg bg-blue-500/10">
+                      <Thermometer className="h-5 w-5 text-blue-500" />
                     </div>
                     <div>
-                      <p className="text-l font-bold">{data.current}{data.unit}</p>
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {key.replace(/([A-Z])/g, " $1").trim()}
-                      </p>
-                      <p className={`text-xs capitalize ${getStatusColor(data.status)}`}>
-                        {data.status}
+                      <p className="text-l font-bold">{sensorData.temperature_C.toFixed(1)}°C</p>
+                      <p className="text-sm text-muted-foreground">Suhu</p>
+                      <p className="text-xs text-blue-600">
+                        {sensorData.temperature_C > 30 ? 'Tinggi' : 
+                         sensorData.temperature_C < 20 ? 'Rendah' : 'Optimal'}
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
+
+              {/* Humidity */}
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-green-500/10">
+                      <Droplets className="h-5 w-5 text-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-l font-bold">{sensorData.humidity_percent.toFixed(1)}%</p>
+                      <p className="text-sm text-muted-foreground">Kelembapan</p>
+                      <p className="text-xs text-green-600">
+                        {sensorData.humidity_percent > 80 ? 'Tinggi' : 
+                         sensorData.humidity_percent < 50 ? 'Rendah' : 'Optimal'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Soil Moisture */}
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-orange-500/10">
+                      <Droplets className="h-5 w-5 text-orange-500" />
+                    </div>
+                    <div>
+                      <p className="text-l font-bold">{sensorData.soil_moisture_percent.toFixed(1)}%</p>
+                      <p className="text-sm text-muted-foreground">Kelembapan Tanah</p>
+                      <p className="text-xs text-orange-600">
+                        {sensorData.soil_moisture_percent > 70 ? 'Tinggi' : 
+                         sensorData.soil_moisture_percent < 40 ? 'Rendah' : 'Optimal'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Soil pH */}
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-500/10">
+                      <Beaker className="h-5 w-5 text-purple-500" />
+                    </div>
+                    <div>
+                      <p className="text-l font-bold">6.8 pH</p>
+                      <p className="text-sm text-muted-foreground">pH Tanah</p>
+                      <p className="text-xs text-purple-600">Optimal</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
+          {error && (
+            <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-sm text-orange-800">
+                <AlertTriangle className="h-4 w-4 inline mr-1" />
+                {error}
+              </p>
+            </div>
+          )}
+        </CardContent>
       </Card>
 
       {/* Disease Prediction */}
@@ -249,49 +299,87 @@ export default function FieldDetail() {
           </CardTitle>
           <CardDescription>
             Analisis berbasis AI untuk potensi penyakit tanaman
+            {prediction && (
+              <span className="ml-2 text-xs text-muted-foreground">
+                • Terakhir diperbarui: {new Date(prediction.timestamp).toLocaleTimeString()}
+              </span>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {/* Overall Risk */}
-            <div className="p-4 rounded-lg bg-muted/50">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">Risiko Penyakit Keseluruhan</span>
-                <span className="text-2xl font-bold text-orange-600">
-                  {diseaseRisk.overall}%
-                </span>
-              </div>
-              <Progress value={diseaseRisk.overall} className="h-2" />
-              <p className="text-sm text-muted-foreground mt-2">
-                Risiko sedang - pantau dengan seksama dan terapkan tindakan
-                pencegahan
-              </p>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+              <span>Menganalisis risiko penyakit...</span>
             </div>
-
-            {/* Individual Risks */}
-            <div className="space-y-3">
-              <h4 className="font-medium">Risiko Penyakit Spesifik</h4>
-              {diseaseRisk.risks.map((risk, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 rounded-lg border"
-                >
-                  <div>
-                    <p className="font-medium">{risk.name}</p>
-                    <p className="text-sm text-muted-foreground capitalize">
-                      tingkat {risk.severity}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-bold">{risk.probability}%</span>
-                    <p className="text-xs text-muted-foreground">
-                      probabilitas
-                    </p>
-                  </div>
+          ) : prediction ? (
+            <div className="space-y-4">
+              {/* Overall Risk */}
+              <div className="p-4 rounded-lg bg-muted/50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium">Risiko Penyakit Keseluruhan</span>
+                  <span className={`text-2xl font-bold ${
+                    prediction.overall_risk < 15 ? 'text-green-600' :
+                    prediction.overall_risk < 35 ? 'text-orange-600' : 'text-red-600'
+                  }`}>
+                    {prediction.overall_risk}%
+                  </span>
                 </div>
-              ))}
+                <Progress value={prediction.overall_risk} className="h-2" />
+                <p className="text-sm text-muted-foreground mt-2">
+                  Risiko {prediction.risk_level} - {getRiskDescription(prediction.overall_risk)}
+                </p>
+              </div>
+
+              {/* Individual Risks */}
+              {prediction.disease_risks.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="font-medium">Risiko Penyakit Spesifik</h4>
+                  {prediction.disease_risks.map((risk, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 rounded-lg border"
+                    >
+                      <div>
+                        <p className="font-medium">{risk.name}</p>
+                        <p className="text-sm text-muted-foreground capitalize">
+                          tingkat {risk.severity}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold">{risk.probability}%</span>
+                        <p className="text-xs text-muted-foreground">
+                          probabilitas
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Predicted Disease */}
+              <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium text-blue-900">
+                    Penyakit yang Diprediksi: {prediction.predicted_disease}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : error ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <AlertTriangle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                <p className="text-red-600">Gagal memuat prediksi penyakit</p>
+                <p className="text-sm text-muted-foreground mt-1">{error}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-muted-foreground">Tidak ada data prediksi tersedia</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -307,27 +395,38 @@ export default function FieldDetail() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {treatments.map((treatment) => (
-              <div key={treatment.id} className="p-4 rounded-lg border">
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-medium">{treatment.title}</h4>
-                  <Badge variant={getPriorityColor(treatment.priority)}>
-                    prioritas {treatment.priority}
-                  </Badge>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+              <span>Menganalisis saran penanganan...</span>
+            </div>
+          ) : prediction && prediction.treatments ? (
+            <div className="space-y-4">
+              {prediction.treatments.map((treatment) => (
+                <div key={treatment.id} className="p-4 rounded-lg border">
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-medium">{treatment.title}</h4>
+                    <Badge variant={getPriorityColor(treatment.priority)}>
+                      prioritas {treatment.priority}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {treatment.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">
+                      Aksi yang Disarankan:
+                    </span>
+                    <span className="text-sm">{treatment.action}</span>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {treatment.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">
-                    Aksi yang Disarankan:
-                  </span>
-                  <span className="text-sm">{treatment.action}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-muted-foreground">Tidak ada saran penanganan tersedia</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
