@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sprout, TrendingUp, Calendar } from "lucide-react";
+import { Sprout, TrendingUp, Calendar, Info } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 export default function Fields() {
   const { profile } = useAuth();
@@ -20,7 +20,7 @@ export default function Fields() {
     {
       id: 1,
       name: "Ladang A - Jagung",
-      area: "5.2 hektar",
+      area: "520 m²",
       growth: 75,
       harvestDate: "2024-09-15",
       estimatedYield: "2,400 kg",
@@ -29,7 +29,7 @@ export default function Fields() {
     {
       id: 2,
       name: "Ladang B - Padi",
-      area: "3.8 hektar",
+      area: "380 m²",
       growth: 45,
       harvestDate: "2024-08-20",
       estimatedYield: "1,800 kg",
@@ -38,7 +38,7 @@ export default function Fields() {
     {
       id: 3,
       name: "Ladang C - Padi",
-      area: "4.1 hektar",
+      area: "410 m²",
       growth: 30,
       harvestDate: "2024-10-05",
       estimatedYield: "1,600 kg",
@@ -47,7 +47,7 @@ export default function Fields() {
     {
       id: 1,
       name: "Field A - Corn",
-      area: "5.2 hectares",
+      area: "520 m²",
       growth: 75,
       harvestDate: "2024-09-15",
       estimatedYield: "2,400 kg",
@@ -58,7 +58,7 @@ export default function Fields() {
     {
       id: 2,
       name: "Field B - Wheat",
-      area: "3.8 hectares",
+      area: "380 m²",
       growth: 45,
       harvestDate: "2024-08-20",
       estimatedYield: "1,800 kg",
@@ -69,7 +69,7 @@ export default function Fields() {
     {
       id: 3,
       name: "Field C - Soybeans",
-      area: "4.1 hectares",
+      area: "410 m²",
       growth: 30,
       harvestDate: "2024-10-05",
       estimatedYield: "1,600 kg",
@@ -80,6 +80,29 @@ export default function Fields() {
   ];
   const handleViewDetails = (fieldId: number) => {
     navigate(`/field/${fieldId}`);
+  };
+
+  const getGrowthStage = (growth: number) => {
+    if (growth < 25) return "Vegetatif";
+    if (growth < 60) return "Generatif";
+    if (growth < 85) return "Pematangan";
+    return "Senesens";
+  };
+
+  const getStageDescription = (growth: number) => {
+    const stage = getGrowthStage(growth);
+    switch (stage) {
+      case "Vegetatif":
+        return "Tanaman masih kecil, baru tumbuh daun dan batang";
+      case "Generatif":
+        return "Tanaman mulai berbunga dan berbuah";
+      case "Pematangan":
+        return "Buah atau biji sedang mengisi dan membesar";
+      case "Senesens":
+        return "Tanaman sudah tua, siap untuk dipanen";
+      default:
+        return "";
+    }
   };
   return (
     <RoleBasedLayout>
@@ -141,25 +164,25 @@ export default function Fields() {
                     style={{ width: `${field.growth}%` }}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="text-center p-2 bg-white/60 rounded-lg">
-                    <p className="font-medium text-gray-600">Panen</p>
-                    <p className="font-bold text-gray-800">
-                      {field.harvestDate}
-                    </p>
-                  </div>
-                  <div className="text-center p-2 bg-white/60 rounded-lg">
-                    <p className="font-medium text-gray-600">Estimasi</p>
-                    <p className="font-bold text-gray-800">
-                      {field.estimatedYield}
-                    </p>
+                <div className="flex items-center justify-between text-xs">
+                  <div className="font-medium text-gray-600">Tahap</div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-semibold text-gray-800">
+                      {getGrowthStage(field.growth)}
+                    </span>
+                    <div className="group relative">
+                      <Info className="h-3 w-3 text-gray-400 hover:text-gray-600 cursor-help" />
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-normal max-w-xs z-10">
+                        {getStageDescription(field.growth)}
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <Button
-                variant="outline"
-                className="w-full"
+                className="w-full bg-[#31B57F] hover:bg-[#27A06F] text-white"
                 size="sm"
                 onClick={() => handleViewDetails(field.id)}
               >

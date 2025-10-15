@@ -120,8 +120,8 @@ export default function MapWithAlerts({
         lng: center[1] - 0.01,
         percent: 78,
         radiusM: 800,
-        crop: "Kedelai",
-        pest: "Thrips",
+        crop: "Padi",
+        pest: "Wereng",
       },
     ];
 
