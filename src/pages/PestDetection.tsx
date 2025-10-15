@@ -20,13 +20,7 @@ import {
   UploadCloud,
   AlertTriangle,
 } from "lucide-react";
-
-// Data dummy hasil analisis
-const dummyAnalysis = [
-  { name: "Penggerek Batang", probability: 68, severity: "tinggi" },
-  { name: "Wereng Cokelat", probability: 42, severity: "sedang" },
-  { name: "Hawar Daun Bakteri", probability: 15, severity: "rendah" },
-];
+import { detectPest, PestDetectionResult } from "@/services/roboflowApi";
 
 export default function PestDetection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -40,6 +34,9 @@ export default function PestDetection() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const analysisTimerRef = useRef<number | null>(null);
+  // API analysis results
+  const [analysisResults, setAnalysisResults] = useState<PestDetectionResult[]>([]);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Ref untuk input file
@@ -51,8 +48,6 @@ export default function PestDetection() {
       const reader = new FileReader();
       reader.onload = (ev) => {
         setCapturedImage(ev.target?.result as string);
-        // start overlay analysis
-        startOverlayAnalysis();
         stopCamera();
       };
       reader.readAsDataURL(file);
@@ -69,6 +64,8 @@ export default function PestDetection() {
     setShowAnalysis(false);
     setIsAnalyzing(false);
     setAnalysisProgress(0);
+    setAnalysisResults([]);
+    setAnalysisError(null);
     if (analysisTimerRef.current) {
       window.clearInterval(analysisTimerRef.current);
       analysisTimerRef.current = null;
@@ -102,6 +99,14 @@ export default function PestDetection() {
       stopCamera();
     };
   }, []);
+
+  // Auto-start analysis when image is captured
+  useEffect(() => {
+    if (capturedImage && !isAnalyzing && !showAnalysis) {
+      console.log('Image captured, starting analysis automatically');
+      startOverlayAnalysis();
+    }
+  }, [capturedImage, isAnalyzing, showAnalysis]);
 
   const startCamera = async () => {
     try {
@@ -176,40 +181,69 @@ export default function PestDetection() {
         context.drawImage(videoRef.current, 0, 0);
         const imageData = canvasRef.current.toDataURL("image/png");
         setCapturedImage(imageData);
-        // show overlay analysis on top of the captured image
-        startOverlayAnalysis();
         // Stop camera right after capturing
         stopCamera();
       }
     }
   };
 
-  const startOverlayAnalysis = () => {
-    // simulate 5s analysis with progress updates
+  const startOverlayAnalysis = async () => {
+    if (!capturedImage) return;
+    
     setShowAnalysis(false);
     setIsAnalyzing(true);
     setAnalysisProgress(0);
-    const totalMs = 5000;
-    const stepMs = 100; // 50 steps => smooth enough
-    const steps = Math.ceil(totalMs / stepMs);
-    let current = 0;
-    if (analysisTimerRef.current) {
-      window.clearInterval(analysisTimerRef.current);
-      analysisTimerRef.current = null;
-    }
-    analysisTimerRef.current = window.setInterval(() => {
-      current += 1;
-      const pct = Math.min(100, Math.round((current / steps) * 100));
-      setAnalysisProgress(pct);
-      if (current >= steps) {
-        if (analysisTimerRef.current) {
-          window.clearInterval(analysisTimerRef.current);
-          analysisTimerRef.current = null;
-        }
-        setIsAnalyzing(false);
-        setShowAnalysis(true);
+    setAnalysisError(null);
+    
+    // Simulate progress updates while API call is in progress
+    let progress = 0;
+    setAnalysisProgress(0);
+    const progressInterval = setInterval(() => {
+      progress += 2; // increase by 2% every 100ms (adjust as needed)
+      if (progress >= 90) {
+        progress = 90;
+        setAnalysisProgress(progress);
+        clearInterval(progressInterval);
+      } else {
+        setAnalysisProgress(progress);
       }
-    }, stepMs);
+    }, 100);
+
+    try {
+      // Call the Roboflow API
+      console.log('Starting API call with image:', capturedImage ? 'Image present' : 'No image');
+      const results = await detectPest(capturedImage);
+      
+      // Debug: Log results in component
+      console.log('Analysis Results in Component:', results);
+      console.log('Results length:', results.length);
+      
+      // Clear progress interval
+      // clearInterval(progressInterval);
+      setAnalysisProgress(100);
+      
+      // Set results and show analysis
+      setAnalysisResults(results);
+      setIsAnalyzing(false);
+      setShowAnalysis(true);
+      
+      console.log('Analysis completed, showAnalysis set to true');
+      
+    } catch (error) {
+      // Clear progress interval
+      // clearInterval(progressInterval);
+      
+      // Handle error
+      const errorMessage = error instanceof Error ? error.message : 'Failed to analyze image';
+      console.error('Pest detection error:', error);
+      console.log('Setting error message:', errorMessage);
+      
+      setAnalysisError(errorMessage);
+      setIsAnalyzing(false);
+      setShowAnalysis(true);
+      
+      console.log('Error handled, showAnalysis set to true');
+    }
   };
 
   return (
@@ -328,15 +362,6 @@ export default function PestDetection() {
 
             <div className="flex flex-row gap-2 items-center">
               <div className="flex gap-2">
-                {!streaming && !capturedImage ? (
-                  <Button
-                    onClick={startCamera}
-                    className="gap-2"
-                    disabled={!!capturedImage}
-                  >
-                    <Camera className="h-4 w-4" /> Mulai Kamera
-                  </Button>
-                ) : null}
                 {streaming && !capturedImage && (
                   <Button onClick={capturePhoto} className="gap-2">
                     <CameraIcon className="h-4 w-4" /> Ambil Foto
@@ -379,110 +404,137 @@ export default function PestDetection() {
             <CardHeader>
               <CardTitle>Hasil Analisis Foto</CardTitle>
               <CardDescription>
-                Analisis berdasarkan foto yang diambil
+                Analisis berdasarkan foto yang diambil menggunakan AI
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* Summary + action buttons */}
-              <div className="mb-3">
-                {(() => {
-                  const sorted = [...dummyAnalysis].sort(
-                    (a, b) => b.probability - a.probability
-                  );
-                  const top = sorted[0];
-                  const isCritical =
-                    top.severity === "tinggi" || top.probability >= 80;
-                  return (
-                    <div
-                      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-md border ${
-                        isCritical
-                          ? "bg-red-50 border-red-300 text-red-800"
-                          : "bg-white border-slate-200"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {isCritical && (
-                          <AlertTriangle className="h-6 w-6 text-red-600 animate-pulse" />
-                        )}
-                        <div>
-                          <div className="text-sm text-muted-foreground">
-                            Deteksi teratas
-                          </div>
-                          <div className="text-lg font-semibold">
-                            {top.probability}% {top.name} terdeteksi
-                          </div>
-                          {isCritical ? (
-                            <div className="text-sm font-medium">
-                              Segera ambil tindakan untuk mencegah penyebaran.
-                            </div>
-                          ) : (
-                            <div className="text-xs text-muted-foreground">
-                              Periksa rincian hasil dan bagikan ke kelompok tani
-                              jika perlu.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={async () => {
-                            const shareText = `${top.probability}% ${top.name} terdeteksi pada tanaman. Lihat di AgroPredict.`;
-                            if ((navigator as any).share) {
-                              try {
-                                await (navigator as any).share({
-                                  title: "Peringatan Hama",
-                                  text: shareText,
-                                  url: window.location.href,
-                                });
-                                return;
-                              } catch (err) {
-                                console.warn("Share failed", err);
-                              }
-                            }
-                            navigate("/groups");
-                          }}
+
+              {/* Error display */}
+              {analysisError && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{analysisError}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Results display */}
+              {analysisResults.length > 0 ? (
+                <>
+                  {/* Summary + action buttons */}
+                  <div className="mb-3">
+                    {(() => {
+                      const top = analysisResults[0]; // Already sorted by confidence
+                      const isCritical =
+                        top.severity === "tinggi" || top.probability >= 80;
+                      return (
+                        <div
+                          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-md border ${
+                            isCritical
+                              ? "bg-red-50 border-red-300 text-red-800"
+                              : "bg-white border-slate-200"
+                          }`}
                         >
-                          Bagikan ke Kelompok
-                        </Button>
+                          <div className="flex items-center gap-3">
+                            {isCritical && (
+                              <AlertTriangle className="h-6 w-6 text-red-600 animate-pulse" />
+                            )}
+                            <div>
+                              <div className="text-sm text-muted-foreground">
+                                Deteksi teratas
+                              </div>
+                              <div className="text-lg font-semibold">
+                                {top.probability}% {top.name} terdeteksi
+                              </div>
+                              {isCritical ? (
+                                <div className="text-sm font-medium">
+                                  Segera ambil tindakan untuk mencegah penyebaran.
+                                </div>
+                              ) : (
+                                <div className="text-xs text-muted-foreground">
+                                  Periksa rincian hasil dan bagikan ke kelompok tani
+                                  jika perlu.
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              onClick={async () => {
+                                const shareText = `${top.probability}% ${top.name} terdeteksi pada tanaman. Lihat di AgroPredict.`;
+                                if ((navigator as any).share) {
+                                  try {
+                                    await (navigator as any).share({
+                                      title: "Peringatan Hama",
+                                      text: shareText,
+                                      url: window.location.href,
+                                    });
+                                    return;
+                                  } catch (err) {
+                                    console.warn("Share failed", err);
+                                  }
+                                }
+                                navigate("/groups");
+                              }}
+                            >
+                              Bagikan ke Kelompok
+                            </Button>
 
-                        <Button onClick={() => navigate("/treatment")}>
-                          Cara Mengatasi
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* Dummy analisis hanya muncul kalau showAnalysis true */}
-              <div className="space-y-2">
-                {dummyAnalysis.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center border p-2 rounded-md"
-                  >
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Kemungkinan: {item.probability}% | Keparahan:{" "}
-                        {item.severity}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={
-                        item.severity === "tinggi"
-                          ? "destructive"
-                          : item.severity === "sedang"
-                          ? "default"
-                          : "secondary"
-                      }
-                    >
-                      {item.severity}
-                    </Badge>
+                            <Button onClick={() => navigate("/treatment")}>
+                              Cara Mengatasi
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
-                ))}
-              </div>
+
+                  {/* Detailed results */}
+                  <div className="space-y-2">
+                    {analysisResults.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="flex justify-between items-center border p-2 rounded-md"
+                      >
+                        <div>
+                          <p className="font-medium">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Kemungkinan: {item.probability}% | Keparahan:{" "}
+                            {item.severity}
+                          </p>
+                          {item.boundingBox && (
+                            <p className="text-xs text-muted-foreground">
+                              Lokasi: ({Math.round(item.boundingBox.x)}, {Math.round(item.boundingBox.y)}) | 
+                              Ukuran: {Math.round(item.boundingBox.width)}×{Math.round(item.boundingBox.height)}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            ID Deteksi: {item.detectionId} | Class ID: {item.classId}
+                          </p>
+                        </div>
+                        <Badge
+                          variant={
+                            item.severity === "tinggi"
+                              ? "destructive"
+                              : item.severity === "sedang"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {item.severity}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : !analysisError && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Info className="h-8 w-8 mx-auto mb-2" />
+                  <p>Tidak ada hama terdeteksi dalam gambar ini.</p>
+                  <p className="text-sm">Coba ambil foto dengan pencahayaan yang lebih baik atau fokus pada area yang dicurigai.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
