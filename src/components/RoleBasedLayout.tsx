@@ -18,7 +18,37 @@ import {
   Truck,
   Building2,
   Camera,
+  Bell,
 } from "lucide-react";
+import { useWarnings } from "@/hooks/useWarnings";
+
+// Safe warnings button with fallback to avoid breaking the header if warnings hook fails
+const WarningsButton = () => {
+  const navigate = useNavigate();
+  let unread = 0;
+  try {
+    const data = useWarnings();
+    unread = Number(data?.unreadCount) || 0;
+  } catch (_) {
+    unread = 0;
+  }
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => navigate("/warnings")}
+      className="relative"
+      aria-label="Peringatan"
+    >
+      <Bell className="h-4 w-4" />
+      {unread > 0 && (
+        <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 min-w-[18px] h-[18px] rounded-full text-[10px] font-semibold bg-red-500 text-white">
+          {unread}
+        </span>
+      )}
+    </Button>
+  );
+};
 
 interface RoleBasedLayoutProps {
   children: ReactNode;
@@ -100,6 +130,7 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
             <span className="text-sm text-muted-foreground hidden sm:block">
               {profile.full_name}
             </span>
+            <WarningsButton />
             <Button
               variant="outline"
               size="sm"

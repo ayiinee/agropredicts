@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -41,10 +41,14 @@
     --ring: 154 50% 45%;
 
     /* Modern eco gradients */
-    --gradient-primary: linear-gradient(135deg, #31B57F, #27A06F);
-    --gradient-earth: linear-gradient(180deg, #F5F6FA, #E8F5E8);
-    --gradient-field: linear-gradient(45deg, #31B57F, #4CAF50);
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    --gradient-primary: linear-gradient(135deg, #31b57f, #27a06f);
+    --gradient-earth: linear-gradient(180deg, #f5f6fa, #e8f5e8);
+    --gradient-field: linear-gradient(45deg, #31b57f, #4caf50);
+    --gradient-glass: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.05)
+    );
 
     /* Modern shadows with glassmorphism */
     --shadow-soft: 0 2px 8px rgba(49, 181, 127, 0.08);
@@ -74,7 +78,7 @@
     --weather-sunny: 45 100% 60%; /* Yellow tint */
     --weather-rainy: 200 100% 60%; /* Blue tint */
     --weather-cloudy: 240 20% 70%; /* Gray tint */
-    
+
     /* Alert colors */
     --alert-warning: 38 100% 60%; /* #FFB84E */
     --alert-danger: 0 100% 60%; /* #FF4E4E */
@@ -113,10 +117,22 @@
     --ring: 154 50% 55%;
 
     /* Dark mode eco gradients */
-    --gradient-primary: linear-gradient(135deg, #31B57F, #27A06F);
-    --gradient-earth: linear-gradient(180deg, hsl(140 15% 12%), hsl(140 15% 8%));
-    --gradient-field: linear-gradient(45deg, hsl(154 35% 25%), hsl(100 35% 30%));
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    --gradient-primary: linear-gradient(135deg, #31b57f, #27a06f);
+    --gradient-earth: linear-gradient(
+      180deg,
+      hsl(140 15% 12%),
+      hsl(140 15% 8%)
+    );
+    --gradient-field: linear-gradient(
+      45deg,
+      hsl(154 35% 25%),
+      hsl(100 35% 30%)
+    );
+    --gradient-glass: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.02)
+    );
 
     /* Dark shadows */
     --shadow-soft: 0 4px 12px hsl(0 0% 0% / 0.2);
@@ -146,11 +162,16 @@
 
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+    font-family: "Inter", "Poppins", system-ui, -apple-system, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Poppins", "Inter", system-ui, -apple-system, sans-serif;
     font-weight: 600;
   }
 }
@@ -319,7 +340,8 @@
   }
 
   @keyframes bounceGentle {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0);
     }
     50% {
@@ -360,7 +382,12 @@
 
   /* Loading shimmer effect */
   .shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }

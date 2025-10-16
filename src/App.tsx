@@ -21,6 +21,7 @@ import GroupManagement from "./pages/GroupManagement";
 import CooperativeAnalytics from "./pages/CooperativeAnalytics";
 import Treatment from "./pages/Treatment";
 import TreatmentDetail from "./pages/TreatmentDetail";
+import Warnings from "./pages/Warnings";
 
 const queryClient = new QueryClient();
 
@@ -142,6 +143,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <TreatmentDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/warnings"
+              element={
+                <ProtectedRoute>
+                  <Warnings />
                 </ProtectedRoute>
               }
             />

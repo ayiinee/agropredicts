@@ -91,7 +91,17 @@ export default function MapWithAlerts({
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
-    // Dummy pest-alert points around center
+    // Color mapping by pest type (jenis hama)
+    const pestColors: Record<string, string> = {
+      "Wereng coklat": "#a16207", // amber-700
+      "Wereng hijau": "#16a34a", // green-600
+      "Penggulung daun": "#2563eb", // blue-600
+      "Kepik padi": "#ea580c", // orange-600
+      "Penggerek batang padi": "#dc2626", // red-600
+      "Lalat pengorok daun padi": "#7c3aed", // violet-600
+    };
+
+    // Dummy pest-alert points around center (now with specific pest types)
     const alerts = [
       {
         id: 1,
@@ -101,7 +111,7 @@ export default function MapWithAlerts({
         percent: 12,
         radiusM: 250,
         crop: "Jagung",
-        pest: "Ulat",
+        pest: "Wereng coklat",
       },
       {
         id: 2,
@@ -111,7 +121,7 @@ export default function MapWithAlerts({
         percent: 45,
         radiusM: 420,
         crop: "Padi",
-        pest: "Wereng",
+        pest: "Penggerek batang padi",
       },
       {
         id: 3,
@@ -121,7 +131,7 @@ export default function MapWithAlerts({
         percent: 78,
         radiusM: 800,
         crop: "Padi",
-        pest: "Wereng",
+        pest: "Lalat pengorok daun padi",
       },
     ];
 
@@ -174,19 +184,18 @@ export default function MapWithAlerts({
     const refs: any[] = [];
 
     alerts.forEach((a: any) => {
+      const strokeFill = pestColors[a.pest] || "#31B57F";
       const marker = L.circleMarker([a.lat, a.lng], {
         radius: 8,
-        fillColor:
-          a.percent >= 75 ? "#ff4e4e" : a.percent >= 40 ? "#ffb84e" : "#31B57F",
+        fillColor: strokeFill,
         color: "#ffffff",
         weight: 1,
         opacity: 1,
         fillOpacity: 1,
       }).addTo(map);
 
-      const baseStroke =
-        a.percent >= 75 ? "#ff4e4e" : a.percent >= 40 ? "#ffb84e" : "#31B57F";
-      const baseFill = baseStroke; // same hue, control opacity via fillOpacity
+      const baseStroke = strokeFill;
+      const baseFill = strokeFill; // same hue, control opacity via fillOpacity
       const circle = L.circle([a.lat, a.lng], {
         radius: a.radiusM,
         color: baseStroke,
@@ -197,7 +206,7 @@ export default function MapWithAlerts({
       }).addTo(map);
 
       marker.bindPopup(
-        `<strong>${a.name}</strong><br/>Tanaman: ${a.crop}<br/>Perkiraan tertular: ${a.percent}%<br/>Hama: ${a.pest}<br/>Radius: ${a.radiusM} m`
+        `<strong>${a.name}</strong><br/>Tanaman: ${a.crop}<br/>Hama: ${a.pest}<br/>Radius: ${a.radiusM} m`
       );
 
       // hover interactions
@@ -236,6 +245,7 @@ export default function MapWithAlerts({
 
     // store refs on instance for external access
     (map as any)._alertRefs = refs;
+    (map as any)._pestColors = pestColors;
 
     // fit bounds to alerts with some padding
     const alertGroup = L.featureGroup(
@@ -386,7 +396,41 @@ export default function MapWithAlerts({
           )}
         </div>
 
-        {/* Inline hover info via popup on marker/circle only; overlay removed */}
+        {/* Legend */}
+        {expanded ? (
+          <div className="absolute left-2 bottom-[80px] z-[1000] bg-white/55 backdrop-blur-sm shadow rounded-md p-3 border">
+            <div className="text-xs font-semibold mb-2">Legenda Hama</div>
+            <div className="grid grid-cols-1 gap-1 text-xs">
+              {Object.entries(
+                (instanceRef.current as any)?._pestColors || {}
+              ).map(([name, color]: any) => (
+                <div key={name} className="flex items-center gap-2">
+                  <span
+                    className="inline-block w-3 h-3 rounded-sm"
+                    style={{ backgroundColor: color as string }}
+                  />
+                  <span>{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="absolute left-2 bottom-2 z-[1000] bg-white/60 backdrop-blur-sm shadow rounded-md p-2 pr-3 border">
+            <div className="flex items-center gap-3 text-[10px]">
+              {Object.entries(
+                (instanceRef.current as any)?._pestColors || {}
+              ).map(([name, color]: any) => (
+                <div key={name} className="flex items-center gap-1">
+                  <span
+                    className="inline-block w-2.5 h-2.5 rounded-sm"
+                    style={{ backgroundColor: color as string }}
+                  />
+                  <span className="whitespace-nowrap">{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Protect farm CTA when inside any alert */}
         <div className="absolute right-2 bottom-2">
