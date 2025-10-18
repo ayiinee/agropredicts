@@ -247,11 +247,27 @@ export default function MapWithAlerts({
     (map as any)._alertRefs = refs;
     (map as any)._pestColors = pestColors;
 
-    // fit bounds to alerts with some padding
-    const alertGroup = L.featureGroup(
-      alerts.map((a: any) => L.circle([a.lat, a.lng], { radius: 1 }))
-    );
-    map.fitBounds(alertGroup.getBounds().pad(0.4));
+    // fit bounds to alerts with some padding - wait for map to be fully initialized
+    setTimeout(() => {
+      try {
+        if (alerts.length > 0) {
+          const alertGroup = L.featureGroup(
+            alerts.map((a: any) => L.circle([a.lat, a.lng], { radius: 1 }))
+          );
+          // Check if the map projection is ready
+          if (map.getProjection && map.getProjection()) {
+            map.fitBounds(alertGroup.getBounds().pad(0.4));
+          } else {
+            // Fallback: just center on the first alert
+            map.setView([alerts[0].lat, alerts[0].lng], zoom);
+          }
+        }
+      } catch (error) {
+        console.warn('Error fitting bounds to alerts:', error);
+        // Fallback: center on user farm
+        map.setView([userFarm.lat, userFarm.lng], zoom);
+      }
+    }, 100);
 
     // attach farm marker and icons reference so we can update it later
     (map as any)._farmMarker = farmMarker;

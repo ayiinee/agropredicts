@@ -5,6 +5,13 @@ export interface SensorData {
   temperature_C: number;
   humidity_percent: number;
   soil_moisture_percent: number;
+  temp_24h_mean?: number;
+  humidity_24h_mean?: number;
+  soil_moisture_24h_mean?: number;
+  temp_change_6h?: number;
+  soil_moisture_change_6h?: number;
+  humidity_change_6h?: number;
+  heat_soil_ratio?: number;
 }
 
 export interface DiseaseRisk {

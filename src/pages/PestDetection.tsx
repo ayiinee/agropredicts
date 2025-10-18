@@ -9,18 +9,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
   Camera,
-  Info,
   CameraIcon,
   StopCircle,
   UploadCloud,
-  AlertTriangle,
 } from "lucide-react";
 import { detectPest, PestDetectionResult } from "@/services/roboflowApi";
+import PestDetectionResultsModal from "@/components/PestDetectionResultsModal";
 
 export default function PestDetection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -29,7 +25,7 @@ export default function PestDetection() {
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const [streaming, setStreaming] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showResultsModal, setShowResultsModal] = useState(false);
   // overlay analysis state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
@@ -61,7 +57,7 @@ export default function PestDetection() {
   // Handler untuk reset
   const handleReset = () => {
     setCapturedImage(null);
-    setShowAnalysis(false);
+    setShowResultsModal(false);
     setIsAnalyzing(false);
     setAnalysisProgress(0);
     setAnalysisResults([]);
@@ -102,11 +98,11 @@ export default function PestDetection() {
 
   // Auto-start analysis when image is captured
   useEffect(() => {
-    if (capturedImage && !isAnalyzing && !showAnalysis) {
+    if (capturedImage && !isAnalyzing && !showResultsModal) {
       console.log('Image captured, starting analysis automatically');
       startOverlayAnalysis();
     }
-  }, [capturedImage, isAnalyzing, showAnalysis]);
+  }, [capturedImage, isAnalyzing, showResultsModal]);
 
   const startCamera = async () => {
     try {
@@ -190,7 +186,7 @@ export default function PestDetection() {
   const startOverlayAnalysis = async () => {
     if (!capturedImage) return;
     
-    setShowAnalysis(false);
+    setShowResultsModal(false);
     setIsAnalyzing(true);
     setAnalysisProgress(0);
     setAnalysisError(null);
@@ -222,12 +218,12 @@ export default function PestDetection() {
       // clearInterval(progressInterval);
       setAnalysisProgress(100);
       
-      // Set results and show analysis
+      // Set results and show modal
       setAnalysisResults(results);
       setIsAnalyzing(false);
-      setShowAnalysis(true);
+      setShowResultsModal(true);
       
-      console.log('Analysis completed, showAnalysis set to true');
+      console.log('Analysis completed, showResultsModal set to true');
       
     } catch (error) {
       // Clear progress interval
@@ -240,9 +236,9 @@ export default function PestDetection() {
       
       setAnalysisError(errorMessage);
       setIsAnalyzing(false);
-      setShowAnalysis(true);
+      setShowResultsModal(true);
       
-      console.log('Error handled, showAnalysis set to true');
+      console.log('Error handled, showResultsModal set to true');
     }
   };
 
@@ -399,145 +395,38 @@ export default function PestDetection() {
           </CardContent>
         </Card>
 
-        {showAnalysis && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Hasil Analisis Foto</CardTitle>
-              <CardDescription>
-                Analisis berdasarkan foto yang diambil menggunakan AI
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-
-              {/* Error display */}
-              {analysisError && (
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{analysisError}</AlertDescription>
-                </Alert>
-              )}
-
-              {/* Results display */}
-              {analysisResults.length > 0 ? (
-                <>
-                  {/* Summary + action buttons */}
-                  <div className="mb-3">
-                    {(() => {
-                      const top = analysisResults[0]; // Already sorted by confidence
-                      const isCritical =
-                        top.severity === "tinggi" || top.probability >= 80;
-                      return (
-                        <div
-                          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-md border ${
-                            isCritical
-                              ? "bg-red-50 border-red-300 text-red-800"
-                              : "bg-white border-slate-200"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            {isCritical && (
-                              <AlertTriangle className="h-6 w-6 text-red-600 animate-pulse" />
-                            )}
-                            <div>
-                              <div className="text-sm text-muted-foreground">
-                                Deteksi teratas
-                              </div>
-                              <div className="text-lg font-semibold">
-                                {top.probability}% {top.name} terdeteksi
-                              </div>
-                              {isCritical ? (
-                                <div className="text-sm font-medium">
-                                  Segera ambil tindakan untuk mencegah penyebaran.
-                                </div>
-                              ) : (
-                                <div className="text-xs text-muted-foreground">
-                                  Periksa rincian hasil dan bagikan ke kelompok tani
-                                  jika perlu.
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              onClick={async () => {
-                                const shareText = `${top.probability}% ${top.name} terdeteksi pada tanaman. Lihat di AgroPredict.`;
-                                if ((navigator as any).share) {
-                                  try {
-                                    await (navigator as any).share({
-                                      title: "Peringatan Hama",
-                                      text: shareText,
-                                      url: window.location.href,
-                                    });
-                                    return;
-                                  } catch (err) {
-                                    console.warn("Share failed", err);
-                                  }
-                                }
-                                navigate("/groups");
-                              }}
-                            >
-                              Bagikan ke Kelompok
-                            </Button>
-
-                            <Button onClick={() => navigate("/treatment")}>
-                              Cara Mengatasi
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })()}
-                  </div>
-
-                  {/* Detailed results */}
-                  <div className="space-y-2">
-                    {analysisResults.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex justify-between items-center border p-2 rounded-md"
-                      >
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Kemungkinan: {item.probability}% | Keparahan:{" "}
-                            {item.severity}
-                          </p>
-                          {item.boundingBox && (
-                            <p className="text-xs text-muted-foreground">
-                              Lokasi: ({Math.round(item.boundingBox.x)}, {Math.round(item.boundingBox.y)}) | 
-                              Ukuran: {Math.round(item.boundingBox.width)}×{Math.round(item.boundingBox.height)}
-                            </p>
-                          )}
-                          <p className="text-xs text-muted-foreground">
-                            ID Deteksi: {item.detectionId} | Class ID: {item.classId}
-                          </p>
-                        </div>
-                        <Badge
-                          variant={
-                            item.severity === "tinggi"
-                              ? "destructive"
-                              : item.severity === "sedang"
-                              ? "default"
-                              : "secondary"
-                          }
-                        >
-                          {item.severity}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : !analysisError && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Info className="h-8 w-8 mx-auto mb-2" />
-                  <p>Tidak ada hama terdeteksi dalam gambar ini.</p>
-                  <p className="text-sm">Coba ambil foto dengan pencahayaan yang lebih baik atau fokus pada area yang dicurigai.</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        {/* Results Modal */}
+        <PestDetectionResultsModal
+          isOpen={showResultsModal}
+          onClose={() => setShowResultsModal(false)}
+          results={analysisResults}
+          error={analysisError}
+          onShareToGroups={() => {
+            setShowResultsModal(false);
+            // Pass the top detection result to Groups page
+            const topResult = analysisResults[0];
+            if (topResult) {
+              navigate("/groups", {
+                state: {
+                  pestDetectionData: {
+                    name: topResult.name,
+                    probability: topResult.probability,
+                    severity: topResult.severity,
+                    boundingBox: topResult.boundingBox,
+                    detectionId: topResult.detectionId,
+                    classId: topResult.classId
+                  }
+                }
+              });
+            } else {
+              navigate("/groups");
+            }
+          }}
+          onViewTreatment={() => {
+            setShowResultsModal(false);
+            navigate("/treatment");
+          }}
+        />
       </div>
     </RoleBasedLayout>
   );
