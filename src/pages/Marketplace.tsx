@@ -226,7 +226,14 @@ export default function Marketplace() {
                           const params = new URLSearchParams(location.search);
                           if (e.target.value) params.set("q", e.target.value);
                           else params.delete("q");
-                          navigate({ search: params.toString() ? `?${params.toString()}` : "" }, { replace: true });
+                          navigate(
+                            {
+                              search: params.toString()
+                                ? `?${params.toString()}`
+                                : "",
+                            },
+                            { replace: true }
+                          );
                         } catch (err) {}
                       }}
                     />
@@ -237,7 +244,14 @@ export default function Marketplace() {
                         try {
                           const params = new URLSearchParams(location.search);
                           params.delete("q");
-                          navigate({ search: params.toString() ? `?${params.toString()}` : "" }, { replace: true });
+                          navigate(
+                            {
+                              search: params.toString()
+                                ? `?${params.toString()}`
+                                : "",
+                            },
+                            { replace: true }
+                          );
                         } catch (err) {}
                       }}
                     >
