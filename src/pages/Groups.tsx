@@ -210,11 +210,13 @@ export default function Groups() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-lg border bg-muted overflow-hidden">
-              <MapWithAlerts
-                heightClass="h-72"
-                fullscreenTopOffsetClass="top-16 left-0 right-0 bottom-0"
-              />
+            <div className="relative rounded-lg border bg-muted overflow-hidden z-0">
+              <div className="relative z-0">
+                <MapWithAlerts
+                  heightClass="h-72"
+                  fullscreenTopOffsetClass="top-16 left-0 right-0 bottom-0 z-10"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
