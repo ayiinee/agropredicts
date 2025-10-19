@@ -18,8 +18,8 @@ const WerengCoklatTreatmentPage = () => {
   const navigate = useNavigate();
 
   const handleBuyMedicine = () => {
-    // Navigate to marketplace page
-    navigate("/marketplace");
+    // Navigate to marketplace page with pre-filled search for insektisida
+    navigate({ pathname: "/marketplace", search: "?q=insektisida" });
   };
 
   const handleBack = () => {
