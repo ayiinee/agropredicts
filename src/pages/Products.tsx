@@ -177,7 +177,7 @@ export default function Products() {
           <CardHeader>
 
             <div className="flex gap-2">
-              <Input placeholder="Cari produk..." value={query} onChange={(e) => setQuery(e.target.value)} className="w-20" />
+              <Input placeholder="Cari produk..." value={query} onChange={(e) => setQuery(e.target.value)} className="w-50" />
               <Select value={filter} onValueChange={setFilter}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Kategori" />
@@ -203,7 +203,7 @@ export default function Products() {
                   <TableHead>Kategori</TableHead>
                   <TableHead>Harga</TableHead>
                   <TableHead>Stok</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
+                  <TableHead className="text-justify">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -223,23 +223,29 @@ export default function Products() {
                     <TableCell>{p.category}</TableCell>
                     <TableCell>Rp {new Intl.NumberFormat("id-ID").format(p.price)}</TableCell>
                     <TableCell>{p.stock} {p.unit}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button variant="outline" size="icon" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Hapus produk?</AlertDialogTitle>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Batal</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => deleteProduct(p.id)}>Hapus</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </TableCell>
+                    <TableCell className="text-right">
+  <div className="flex items-center justify-end gap-2">
+    <Button variant="outline" size="icon" onClick={() => openEdit(p)}>
+      <Pencil className="h-4 w-4" />
+    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" size="icon">
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Hapus produk?</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogAction onClick={() => deleteProduct(p.id)}>Hapus</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </div>
+</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -158,8 +158,12 @@ export const DistributorDashboard = () => {
                 <ShoppingCart className="h-5 w-5 text-blue-500" />
               </div>
               <div>
-                <p className="text-xl md:text-xl font-bold text-blue-600">{stats.activeOrders}</p>
-                <p className="text-xs md:text-sm text-muted-foreground font-medium">Pesanan Aktif</p>
+                <p className="text-xl md:text-xl font-bold text-blue-600">
+                  {stats.activeOrders}
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground font-medium">
+                  Pesanan Aktif
+                </p>
               </div>
             </div>
           </CardContent>
@@ -190,8 +194,12 @@ export const DistributorDashboard = () => {
                 <AlertTriangle className="h-5 w-5 text-orange-500" />
               </div>
               <div>
-                <p className="text-xl md:text-xl font-bold text-orange-600">{stats.lowStockItems}</p>
-                <p className="text-xs md:text-sm text-muted-foreground font-medium">Stok Rendah</p>
+                <p className="text-xl md:text-xl font-bold text-orange-600">
+                  {stats.lowStockItems}
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground font-medium">
+                  Stok Rendah
+                </p>
               </div>
             </div>
           </CardContent>
@@ -207,7 +215,9 @@ export const DistributorDashboard = () => {
                 <AlertTriangle className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg md:text-xl font-bold">Peringatan Stok Rendah</h2>
+                <h2 className="text-lg md:text-xl font-bold">
+                  Peringatan Stok Rendah
+                </h2>
                 <p className="text-xs md:text-sm text-muted-foreground font-normal">
                   {lowStockProducts.length} produk perlu diisi ulang
                 </p>
@@ -222,9 +232,14 @@ export const DistributorDashboard = () => {
                   className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 md:p-4 rounded-lg md:rounded-xl bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm md:text-base text-gray-900">{product.name}</p>
+                    <p className="font-semibold text-sm md:text-base text-gray-900">
+                      {product.name}
+                    </p>
                     <p className="text-xs md:text-sm text-orange-700 font-medium mt-1">
-                      {product.stock} {product.unit} tersisa <span className="text-gray-600">(min: {product.minStock})</span>
+                      {product.stock} {product.unit} tersisa{" "}
+                      <span className="text-gray-600">
+                        (min: {product.minStock})
+                      </span>
                     </p>
                   </div>
                   {/* <div className="flex gap-2">
@@ -237,7 +252,10 @@ export const DistributorDashboard = () => {
               ))}
             </div>
             {lowStockProducts.length > 3 && (
-              <Button variant="ghost" className="w-full mt-3 text-orange-600 hover:bg-orange-50 text-sm">
+              <Button
+                variant="ghost"
+                className="w-full mt-3 text-orange-600 hover:bg-orange-50 text-sm"
+              >
                 Lihat Semua Alert ({lowStockProducts.length})
                 <ChevronRight className="h-4 w-4 ml-2" />
               </Button>
@@ -255,7 +273,9 @@ export const DistributorDashboard = () => {
                 <ShoppingCart className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg md:text-xl font-bold">Pesanan Terbaru</h2>
+                <h2 className="text-lg md:text-xl font-bold">
+                  Pesanan Terbaru
+                </h2>
                 <p className="text-xs md:text-sm text-muted-foreground font-normal">
                   {recentOrders.length} pesanan terakhir
                 </p>
@@ -273,8 +293,14 @@ export const DistributorDashboard = () => {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold text-sm md:text-base text-gray-900">{order.id}</p>
-                      <Badge className={`${getStatusBgColor(order.status)} text-xs px-2 py-0.5 flex-shrink-0 gap-1`}>
+                      <p className="font-semibold text-sm md:text-base text-gray-900">
+                        {order.id}
+                      </p>
+                      <Badge
+                        className={`${getStatusBgColor(
+                          order.status
+                        )} text-xs px-2 py-0.5 flex-shrink-0 gap-1`}
+                      >
                         {getStatusIcon(order.status)}
                         <span className="hidden xs:inline">{order.status}</span>
                       </Badge>
@@ -296,11 +322,12 @@ export const DistributorDashboard = () => {
               ))}
             </div>
             <Button
-              className="btn-primary w-full mt-4 text-sm md:text-base"
-              onClick={() => window.location.href = "/orders"}
+              variant="ghost"
+              className="w-full mt-4 text-green-600 hover:bg-green-50 text-sm md:text-base"
             >
-              <Eye className="h-4 md:h-5 w-4 md:w-5 mr-2" />
+              {/* <Eye className="h-4 md:h-5 w-4 md:w-5 mr-2" /> */}
               Lihat Semua Pesanan
+              <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           </CardContent>
         </Card>
@@ -313,7 +340,9 @@ export const DistributorDashboard = () => {
                 <TrendingUp className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg md:text-xl font-bold">Produk Terlaris</h2>
+                <h2 className="text-lg md:text-xl font-bold">
+                  Produk Terlaris
+                </h2>
                 <p className="text-xs md:text-sm text-muted-foreground font-normal">
                   Penjualan tertinggi bulan ini
                 </p>
@@ -342,13 +371,19 @@ export const DistributorDashboard = () => {
                     <p className="font-bold text-sm md:text-base text-green-600">
                       {formatRupiah(product.revenue)}
                     </p>
-                    <p className="text-xs md:text-sm text-gray-600 mt-1">Pendapatan</p>
+                    <p className="text-xs md:text-sm text-gray-600 mt-1">
+                      Pendapatan
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
-            <Button variant="ghost" className="w-full mt-4 text-green-600 hover:bg-green-50 text-sm md:text-base">
-              <TrendingUp className="h-4 w-4 mr-2" />
+            <Button
+              variant="ghost"
+              className="w-full mt-4 text-green-600 hover:bg-green-50 text-sm md:text-base"
+              onClick={() => (window.location.href = "/analytics")}
+            >
+              {/* <TrendingUp className="h-4 w-4 mr-2" /> */}
               Lihat Laporan Penjualan
               <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
