@@ -263,7 +263,7 @@ export default function MapWithAlerts({
           }
         }
       } catch (error) {
-        console.warn('Error fitting bounds to alerts:', error);
+        console.warn("Error fitting bounds to alerts:", error);
         // Fallback: center on user farm
         map.setView([userFarm.lat, userFarm.lng], zoom);
       }

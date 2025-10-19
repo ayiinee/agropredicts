@@ -71,9 +71,9 @@ export default function AddFieldModal({ isOpen, onClose, onSubmit }: AddFieldMod
       newErrors.deviceNumber = "Nomor alat harus diisi";
     }
 
-    if (formData.plantingDate > new Date()) {
-      newErrors.plantingDate = "Tanggal tanam tidak boleh di masa depan";
-    }
+    // if (formData.plantingDate > new Date()) {
+    //   newErrors.plantingDate = "Tanggal tanam tidak boleh di masa depan";
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -185,9 +185,9 @@ export default function AddFieldModal({ isOpen, onClose, onSubmit }: AddFieldMod
                 />
               </PopoverContent>
             </Popover>
-            {errors.plantingDate && (
+            {/* {errors.plantingDate && (
               <p className="text-sm text-red-500">{errors.plantingDate}</p>
-            )}
+            )} */}
           </div>
 
           <div className="space-y-2">

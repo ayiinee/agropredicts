@@ -15,11 +15,11 @@ export default function Warnings() {
     return (
       <RoleBasedLayout>
         <div className="min-h-[40vh] flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="text-lg font-medium">Memuat peringatan...</p>
-          </div>
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-lg font-medium">Memuat peringatan...</p>
         </div>
+      </div>
       </RoleBasedLayout>
     );
   }
@@ -31,9 +31,11 @@ export default function Warnings() {
         <Card className="unified-card">
           <CardContent>
             {sorted.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Tidak ada peringatan.
-              </p>
+              <div className="flex items-center justify-center min-h-[200px]">
+                <p className="text-sm text-muted-foreground text-center">
+                  Tidak ada peringatan.
+                </p>
+              </div>
             ) : (
               <ul className="divide-y">
                 {sorted.map((w) => (

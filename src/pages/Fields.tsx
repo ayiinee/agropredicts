@@ -201,9 +201,9 @@ export default function Fields() {
         </div>
 
         {/* Add Field Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-end ">
           <Button 
-            variant="outline"
+            variant="outline" className="bg-[#31B57F] hover:bg-[#27A06F] text-white"
             onClick={() => setIsModalOpen(true)}
           >
             <Sprout className="h-4 w-4 mr-2" />
@@ -215,7 +215,7 @@ export default function Fields() {
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#31B57F] mx-auto mb-4"></div>
+              <div className=" animate-spin rounded-full h-8 w-8 border-b-2 border-[#31B57F] mx-auto mb-4"></div>
               <p className="text-gray-600">Loading fields...</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function Fields() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {fields.map((field) => {
               const growthData = getFieldGrowthData(field);
-              const areaText = field.area_hectares ? `${field.area_hectares} ha` : "Area not set";
+              // const areaText = field.area_hectares ? `${field.area_hectares} ha` : "Area not set";
               const alerts = 0; // TODO: Calculate alerts based on sensor data
               
               return (
@@ -252,9 +252,9 @@ export default function Fields() {
                         </div>
                         <p className="font-semibold text-lg">{field.name}</p>
                       </div>
-                      <p className="text-sm text-gray-600 font-medium">
+                      {/* <p className="text-sm text-gray-600 font-medium">
                         {areaText}
-                      </p>
+                      </p> */}
                       <p className="text-xs text-gray-500">
                         {field.crop_type?.charAt(0).toUpperCase() + field.crop_type?.slice(1)} • {growthData.daysSincePlanting} hari
                       </p>

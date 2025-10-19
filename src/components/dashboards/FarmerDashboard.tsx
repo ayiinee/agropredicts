@@ -24,14 +24,24 @@ import {
   Wind,
   Eye,
   Leaf,
+  Info,
   Zap,
 } from "lucide-react";
+import FieldCardMenu from "@/components/FieldCardMenu";
+import { calculateGrowthProgress } from "@/utils/growthCalculation";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchWeatherApi } from "openmeteo";
+import { fieldService, FieldWithFarm } from "@/services/fieldService";
+import { useToast } from "@/hooks/use-toast";
 
 export const FarmerDashboard = () => {
   const { profile } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Fields state (loaded from DB)
+  const [fields, setFields] = useState<FieldWithFarm[]>([]);
+  const [fieldsLoading, setFieldsLoading] = useState(true);
 
   // State untuk weather data
   const [weatherData, setWeatherData] = useState({
@@ -304,28 +314,34 @@ export const FarmerDashboard = () => {
     initializeLocation();
   }, []);
 
+  // Load farmer fields for dashboard summary
+  useEffect(() => {
+    const loadFields = async () => {
+      if (!profile?.id) return;
+
+      try {
+        setFieldsLoading(true);
+        const farmerFields = await fieldService.getFieldsByFarmer(profile.id);
+        setFields(farmerFields);
+      } catch (error) {
+        console.error("Error loading dashboard fields:", error);
+        toast({
+          title: "Error",
+          description: "Gagal memuat data lahan untuk dashboard.",
+          variant: "destructive",
+        });
+      } finally {
+        setFieldsLoading(false);
+      }
+    };
+
+    loadFields();
+  }, [profile?.id, toast]);
+
   // Peringatan dipindah ke halaman Warnings
 
-  const fields = [
-    {
-      id: 1,
-      name: "Ladang Jagung",
-      area: "5.2 hektar",
-      growth: 75,
-      harvestDate: "2024-09-15",
-      estimatedYield: "2,400 kg",
-      alerts: 1,
-    },
-    {
-      id: 2,
-      name: "Ladang Padi",
-      area: "3.8 hektar",
-      growth: 45,
-      harvestDate: "2024-08-20",
-      estimatedYield: "1,800 kg",
-      alerts: 2,
-    },
-  ];
+  // Note: fields state is loaded from DB via fieldService and stored in `fields` state variable above.
+  // The previous hardcoded `fields` array was removed to avoid redeclaring the `fields` identifier.
 
   // Rekomendasi tanaman dihapus sesuai permintaan
 
@@ -409,12 +425,12 @@ export const FarmerDashboard = () => {
 
       {/* Modern Weather Card */}
       <Card
-        className={`unified-card card-hover card-entrance ${getWeatherCardClass(
+        className={`unified-card shadow-lg  card-entrance ${getWeatherCardClass(
           weatherData.current.condition
         )}`}
       >
         <CardHeader>
-          <CardTitle className="flex items-center gap-3">
+          <CardTitle className="flex items-center gap-3 ">
             <div className="icon-container-primary bg-white/80 border border-white/50 shadow-sm">
               <Cloud className="h-6 w-6 text-white" />
             </div>
@@ -531,7 +547,7 @@ export const FarmerDashboard = () => {
       {/* Peringatan terbaru dihapus dari dashboard; tersedia di halaman Warnings */}
 
       {/* Modern Fields Overview */}
-      <Card className="unified-card card-hover card-entrance">
+      <Card className="unified-card  card-entrance shadow-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -548,72 +564,156 @@ export const FarmerDashboard = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {fields.slice(0, 3).map((field) => (
-              <div
-                key={field.id}
-                className="p-6 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 card-hover space-y-4"
+          {fieldsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-[#31B57F] mx-auto" />
+            </div>
+          ) : fields.length === 0 ? (
+            <div className="text-center py-8">
+              <Sprout className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Belum ada lahan terdaftar
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Silakan daftarkan lahan Anda agar bisa dipantau di dashboard.
+              </p>
+              <Button
+                className="bg-[#31B57F] hover:bg-[#27A06F]"
+                onClick={() => navigate("/fields")}
               >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <div className="icon-container">
-                        <Leaf className="h-4 w-4 text-[#31B57F]" />
+                Daftarkan Lahan
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {fields.slice(0, 3).map((field) => {
+                // Use same growth calculation logic as Fields page
+                const mockSensorData: Record<string, any> = {
+                  device001: {
+                    temperature_C: 28.5,
+                    humidity_percent: 65,
+                    soil_moisture_percent: 55,
+                    temp_24h_mean: 27.8,
+                    humidity_24h_mean: 62,
+                    soil_moisture_24h_mean: 58,
+                    temp_change_6h: 0.5,
+                    soil_moisture_change_6h: -2,
+                    humidity_change_6h: 3,
+                    heat_soil_ratio: 0.52,
+                  },
+                };
+
+                const getFieldGrowthData = (f: FieldWithFarm) => {
+                  const sensor = mockSensorData["device001"];
+                  const plantingDate = f.planting_date
+                    ? new Date(f.planting_date)
+                    : new Date();
+                  return calculateGrowthProgress(
+                    plantingDate,
+                    f.crop_type || "padi",
+                    sensor
+                  );
+                };
+
+                const growthData = getFieldGrowthData(field);
+                const alerts = 0; // Future: compute alerts from sensor data
+
+                return (
+                  <div
+                    key={field.id}
+                    className="p-6 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200  space-y-4"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2">
+                          <div className="icon-container">
+                            <Sprout className="h-4 w-4 text-[#31B57F]" />
+                          </div>
+                          <p className="font-semibold text-lg">{field.name}</p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          {(field.crop_type || "").charAt(0).toUpperCase() +
+                            (field.crop_type || "").slice(1)}{" "}
+                          • {growthData.daysSincePlanting} hari
+                        </p>
                       </div>
-                      <p className="font-semibold text-lg">{field.name}</p>
+                      <div className="flex items-center gap-2">
+                        {alerts > 0 && (
+                          <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-2 py-1">
+                            {alerts} Alert
+                          </Badge>
+                        )}
+                        <FieldCardMenu
+                          fieldId={field.id}
+                          fieldName={field.name}
+                          onEdit={() => navigate(`/fields`)}
+                          onDelete={() =>
+                            toast({
+                              title: "Hapus",
+                              description:
+                                "Silakan hapus lahan dari halaman Lahan Saya.",
+                              variant: "destructive",
+                            })
+                          }
+                        />
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      {field.area}
-                    </p>
-                  </div>
-                  {field.alerts > 0 && (
-                    <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-2 py-1">
-                      {field.alerts} Alert
-                    </Badge>
-                  )}
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium text-gray-700">
-                      Pertumbuhan
-                    </span>
-                    <span className="font-bold text-[#31B57F]">
-                      {field.growth}%
-                    </span>
-                  </div>
-                  <div className="progress-bar">
-                    <div
-                      className="progress-fill"
-                      style={{ width: `${field.growth}%` }}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="text-center p-2 bg-white/60 rounded-lg">
-                      <p className="font-medium text-gray-600">Panen</p>
-                      <p className="font-bold text-gray-800">
-                        {field.harvestDate}
-                      </p>
+
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium text-gray-700">
+                          Pertumbuhan
+                        </span>
+                        <span className="font-bold text-[#31B57F]">
+                          {growthData.growthPercentage}%
+                        </span>
+                      </div>
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${growthData.growthPercentage}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="font-medium text-gray-600">Tahap</div>
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold text-gray-800">
+                            {growthData.growthStage}
+                          </span>
+                          <div className="group relative">
+                            <Info className="h-3 w-3 text-gray-400 hover:text-gray-600 cursor-help" />
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-normal max-w-xs z-10">
+                              {growthData.stageDescription}
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-center p-2 bg-white/60 rounded-lg">
-                      <p className="font-medium text-gray-600">Estimasi</p>
-                      <p className="font-bold text-gray-800">
-                        {field.estimatedYield}
-                      </p>
-                    </div>
+
+                    <Button
+                      className="w-full bg-[#31B57F] hover:bg-[#27A06F] text-white"
+                      size="sm"
+                      onClick={() => navigate(`/field/${field.id}`)}
+                    >
+                      Lihat Detail
+                    </Button>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 flex justify-center">
-            <Button
-              className="btn-primary px-8 py-3"
-              onClick={() => navigate("/fields")}
-            >
-              <Eye className="h-5 w-5 mr-2" />
-              Lihat Semua Lahan
-            </Button>
-          </div>
+                );
+              })}
+            </div>
+          )}
+          {fields.length > 0 && (
+            <div className="mt-6 flex justify-center mb-5">
+              <Button
+                className="btn-primary px-8 py-3"
+                onClick={() => navigate("/fields")}
+              >
+                <Eye className="h-5 w-5 mr-2" />
+                Lihat Semua Lahan
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
