@@ -125,7 +125,7 @@ export default function MapWithAlerts({
       },
       {
         id: 3,
-        name: "Ladang Wawan",
+        name: "Ladang (Pak Wawan)",
         lat: center[0] + 0.015,
         lng: center[1] - 0.01,
         percent: 78,
@@ -242,6 +242,32 @@ export default function MapWithAlerts({
 
       refs.push({ alert: a, marker, circle, farmInside });
     });
+
+    // If any Wereng coklat alert includes the user's farm, draw a highlighted radius
+    try {
+      const werengAlerts = refs.filter(
+        (r) => r.alert.pest === "Wereng coklat" && r.farmInside
+      );
+      if (werengAlerts.length > 0) {
+        // choose the largest radius among matching wereng alerts to be conservative
+        const maxRadius = Math.max(...werengAlerts.map((r) => r.alert.radiusM));
+        // draw a prominent dashed circle around user's farm to indicate risk zone
+        const werengCircle = L.circle([userFarm.lat, userFarm.lng], {
+          radius: maxRadius,
+          color: pestColors["Wereng coklat"] || "#a16207",
+          weight: 2,
+          dashArray: "6,8",
+          fillColor: pestColors["Wereng coklat"] || "#a16207",
+          fillOpacity: 0.08,
+        }).addTo(map);
+
+        // store reference so UI can toggle it later
+        (map as any)._werengRadius = werengCircle;
+      }
+    } catch (e) {
+      // non-fatal
+      // console.warn('Error drawing wereng radius', e);
+    }
 
     // store refs on instance for external access
     (map as any)._alertRefs = refs;

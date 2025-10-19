@@ -74,6 +74,31 @@ const initialProducts: Product[] = [
     is_active: true,
     images: ["/padi.webp"],
   },
+
+  {
+    id: "6",
+    name: "Sidabas 500 EC | Insektisida berbahan aktif BPMC",
+    category: "Obat",
+    price: 89000,
+    stock: 75,
+    unit: "botol",
+    is_active: true,
+    images: [
+      "https://www.petrosida-gresik.com/sites/default/files/sidabas_3.jpg",
+    ],
+  },
+  {
+    id: "7",
+    name: "HOPPER 500 EC | Insektisida berbahan aktif BPMC",
+    category: "Obat",
+    price: 76000,
+    stock: 60,
+    unit: "botol",
+    is_active: true,
+    images: [
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFDDWFC0fvKmymktI2tMuv6XEORClQhZeung&s",
+    ],
+  },
 ];
 
 export default function Products() {
@@ -247,6 +272,7 @@ export default function Products() {
                       <SelectItem value="Pupuk">Pupuk</SelectItem>
                       <SelectItem value="Benih">Benih</SelectItem>
                       <SelectItem value="Alat">Alat</SelectItem>
+                      <SelectItem value="Obat">Obat</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
