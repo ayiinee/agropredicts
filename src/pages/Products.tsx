@@ -203,7 +203,6 @@ export default function Products() {
                   <TableHead>Kategori</TableHead>
                   <TableHead>Harga</TableHead>
                   <TableHead>Stok</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
@@ -224,9 +223,6 @@ export default function Products() {
                     <TableCell>{p.category}</TableCell>
                     <TableCell>Rp {new Intl.NumberFormat("id-ID").format(p.price)}</TableCell>
                     <TableCell>{p.stock} {p.unit}</TableCell>
-                    <TableCell>
-                      {p.is_active ? <Badge>Aktif</Badge> : <Badge variant="outline">Nonaktif</Badge>}
-                    </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button variant="outline" size="icon" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
                       <AlertDialog>
