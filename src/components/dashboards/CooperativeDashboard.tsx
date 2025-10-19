@@ -24,6 +24,10 @@ import {
   Zap,
   Leaf,
   MapPin,
+  ChevronRight,
+  AlertCircle,
+  Wheat,
+  Flame,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -33,7 +37,7 @@ export const CooperativeDashboard = () => {
   // Mock data
   const stats = {
     totalFarmers: 247,
-    pendingDeliveries: 18,
+    pendingDeliveries: 3,
     monthlyRevenue: 1250000, // Rupiah
     activeGroups: 12,
   };
@@ -55,8 +59,8 @@ export const CooperativeDashboard = () => {
       quality: "Grade A",
       pricePerKg: 7500,
       totalValue: 3750000,
-      deliveryDate: "16 Januari 2024",
-      status: "pending",
+      deliveryDate: "7 Oktober 2025",
+      status: "tertunda",
     },
     {
       id: "DEL-002",
@@ -66,21 +70,27 @@ export const CooperativeDashboard = () => {
       quality: "Grade B",
       pricePerKg: 25000,
       totalValue: 7500000,
-      deliveryDate: "15 Januari 2024",
-      status: "reviewing",
+      deliveryDate: "12 Oktober 2025",
+      status: "negosiasi",
     },
     {
       id: "DEL-003",
       farmer: "Agus Saputra",
-      product: "Kopi Robusta",
+      product: "Jagung",
       quantity: "800 kg",
       quality: "Grade A",
-      pricePerKg: 35000,
-      totalValue: 28000000,
-      deliveryDate: "17 Januari 2024",
-      status: "accepted",
+      pricePerKg: 6500,
+      totalValue: 5200000,
+      deliveryDate: "19 Oktober 2025",
+      status: "diterima",
     },
   ];
+const getProductIcon = (productName: string) => {
+  if (productName.toLowerCase().includes("padi")) return Wheat;
+  if (productName.toLowerCase().includes("cabai")) return Flame;
+  if (productName.toLowerCase().includes("jagung")) return Leaf;
+  return Package; // default
+};
 
   const farmerGroups = [
     {
@@ -112,20 +122,20 @@ export const CooperativeDashboard = () => {
   const recentAnnouncements = [
     {
       id: 1,
-      title: "Harga Gabah Musim Panen 2024",
-      date: "15 Januari 2024",
+      title: "Kenaikan Harga Gabah dan Jagung Musim Panen 2025",
+      date: "18 Oktober 2025",
       priority: "high",
     },
     {
       id: 2,
-      title: "Rapat Bulanan Koperasi",
-      date: "14 Januari 2024",
+      title: "Rapat Evaluasi Produksi Cabai dan Padi",
+      date: "17 Oktober 2025",
       priority: "medium",
     },
     {
       id: 3,
-      title: "Pembaruan Standar Mutu Gabah",
-      date: "12 Januari 2024",
+      title: "Pembaruan Standar Mutu Komoditas Koperasi",
+      date: "15 Oktober 2025",
       priority: "low",
     },
   ];
@@ -139,24 +149,24 @@ export const CooperativeDashboard = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending":
-        return "text-yellow-600 bg-yellow-100";
-      case "reviewing":
-        return "text-blue-600 bg-blue-100";
-      case "accepted":
-        return "text-green-600 bg-green-100";
+      case "tertunda":
+        return "bg-yellow-100 text-yellow-700";
+      case "negosiasi":
+        return "bg-blue-100 text-blue-700";
+      case "diterima":
+        return "bg-green-100 text-green-700";
       default:
-        return "text-gray-600 bg-gray-100";
+        return "bg-gray-100 text-gray-700";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "pending":
+      case "tertunda":
         return Clock;
-      case "reviewing":
-        return BarChart3;
-      case "accepted":
+      case "negosiasi":
+        return AlertCircle;
+      case "diterima":
         return CheckCircle;
       default:
         return Clock;
@@ -175,15 +185,15 @@ export const CooperativeDashboard = () => {
             Kelola operasi koperasi dan jaringan petani Anda
           </p>
         </div>
-        <Button className="btn-primary">
+        {/* <Button className="btn-primary">
           <MessageCircle className="h-5 w-5 mr-2" />
           Kirim Pengumuman
-        </Button>
+        </Button> */}
       </div>
 
       {/* Modern Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <Card className="unified-card card-hover">
+        {/* <Card className="unified-card card-hover">
           <CardContent className="card-spacing">
             <div className="flex items-center gap-4">
               <div className="icon-container-primary">
@@ -195,7 +205,7 @@ export const CooperativeDashboard = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="unified-card card-hover">
           <CardContent className="card-spacing">
@@ -204,7 +214,7 @@ export const CooperativeDashboard = () => {
                 <Package className="h-6 w-6 text-orange-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-orange-600">{stats.pendingDeliveries}</p>
+                <p className="text-xl font-bold text-orange-600">{stats.pendingDeliveries}</p>
                 <p className="text-sm text-muted-foreground font-medium">
                   Pengiriman Tertunda
                 </p>
@@ -220,7 +230,7 @@ export const CooperativeDashboard = () => {
                 <DollarSign className="h-6 w-6 text-green-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-xl font-bold text-green-600">
                   {formatRupiah(stats.monthlyRevenue)}
                 </p>
                 <p className="text-sm text-muted-foreground font-medium">
@@ -231,7 +241,7 @@ export const CooperativeDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="unified-card card-hover">
+        {/* <Card className="unified-card card-hover">
           <CardContent className="card-spacing">
             <div className="flex items-center gap-4">
               <div className="icon-container bg-gradient-to-br from-purple-100 to-violet-100">
@@ -243,10 +253,10 @@ export const CooperativeDashboard = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
-      {/* Modern Pending Farmer Products */}
+      {/* Redesigned Pending Farmer Shipments - Compact List */}
       <Card className="unified-card card-hover">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
@@ -256,90 +266,77 @@ export const CooperativeDashboard = () => {
             <div>
               <h2 className="text-xl font-bold">Pengiriman Petani Tertunda</h2>
               <p className="text-sm text-muted-foreground font-normal">
-                Tinjau dan setujui hasil panen yang masuk
+                {pendingProducts.length} pengiriman menunggu persetujuan Anda
               </p>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {pendingProducts.map((product) => {
-              const StatusIcon = getStatusIcon(product.status);
-              return (
-                <div key={product.id} className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 card-hover">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <div className="icon-container">
-                          <Leaf className="h-5 w-5 text-[#31B57F]" />
-                        </div>
-                        <h3 className="font-semibold text-lg">{product.product}</h3>
-                        <Badge className={`${getStatusColor(product.status)} px-3 py-1`}>
-                          <StatusIcon className="h-3 w-3 mr-1" />
-                          {product.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600 font-medium">
-                        Dari: {product.farmer}
-                      </p>
-                    </div>
-                    <div className="text-right space-y-1">
-                      <p className="font-bold text-xl text-green-600">
-                        {formatRupiah(product.totalValue)}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {formatRupiah(product.pricePerKg)}/kg
-                      </p>
-                    </div>
-                  </div>
+          <div className="space-y-0">
+            {pendingProducts.map((product, idx) => {
+  const StatusIcon = getStatusIcon(product.status);
+  const ProductIcon = getProductIcon(product.product);
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
-                    <div className="p-3 bg-white/60 rounded-lg">
-                      <p className="text-gray-600 font-medium">Kuantitas</p>
-                      <p className="font-bold text-gray-800">{product.quantity}</p>
-                    </div>
-                    <div className="p-3 bg-white/60 rounded-lg">
-                      <p className="text-gray-600 font-medium">Kualitas</p>
-                      <p className="font-bold text-gray-800">{product.quality}</p>
-                    </div>
-                    <div className="p-3 bg-white/60 rounded-lg">
-                      <p className="text-gray-600 font-medium">Tanggal Pengiriman</p>
-                      <p className="font-bold text-gray-800">{product.deliveryDate}</p>
-                    </div>
-                    <div className="p-3 bg-white/60 rounded-lg">
-                      <p className="text-gray-600 font-medium">ID Pesanan</p>
-                      <p className="font-bold text-gray-800">{product.id}</p>
-                    </div>
-                  </div>
-
-                  {product.status === "pending" && (
-                    <div className="flex gap-3">
-                      <Button size="sm" variant="outline" className="btn-secondary">
-                        <Target className="h-4 w-4 mr-2" />
-                        Negosiasi Harga
-                      </Button>
-                      <Button size="sm" className="btn-primary">
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Terima
-                      </Button>
-                      <Button size="sm" variant="destructive">
-                        <Shield className="h-4 w-4 mr-2" />
-                        Tolak
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+  return (
+    <div
+      key={product.id}
+      className={`flex items-center justify-between p-4 hover:bg-gray-50 transition-colors cursor-pointer group ${
+        idx !== pendingProducts.length - 1 ? "border-b border-gray-200" : ""
+      }`}
+    >
+      <div className="flex items-start gap-3 flex-1 min-w-0">
+        <div className="icon-container mt-1 flex-shrink-0">
+          <ProductIcon className="h-5 w-5 text-[#31B57F]" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-semibold text-gray-900 truncate">
+              {product.product}
+            </h3>
           </div>
+          <p className="text-sm text-gray-600 mb-1">
+            {product.farmer} • {product.quantity} • {product.quality}
+          </p>
+          <p className="text-sm font-medium text-green-600">
+            {formatRupiah(product.totalValue)}{" "}
+            <span className="text-gray-500">
+              ({formatRupiah(product.pricePerKg)}/kg)
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+        <Badge
+          className={`${getStatusColor(product.status)} px-2.5 py-1 text-xs font-medium gap-1.5`}
+        >
+          <StatusIcon className="h-3 w-3" />
+          {product.status}
+        </Badge>
+        <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+    </div>
+  );
+})}
+
+          </div>
+
+          {/* View All Button */}
+            <Button
+            variant="ghost"
+            className="w-full mt-4 text-[#31B57F] hover:bg-green-50"
+            asChild
+            >
+            <a href="/farmer-products">
+              Lihat Semua Pengiriman
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </a>
+            </Button>
         </CardContent>
       </Card>
 
       {/* Groups & Announcements */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Farmer Groups */}
-        
-
         {/* Modern Recent Announcements */}
         <Card className="unified-card card-hover">
           <CardHeader>
@@ -365,7 +362,7 @@ export const CooperativeDashboard = () => {
                         <div className="icon-container">
                           <Zap className="h-4 w-4 text-[#31B57F]" />
                         </div>
-                        <h3 className="font-semibold text-lg">
+                        <h3 className="font-semibold text-md">
                           {announcement.title}
                         </h3>
                       </div>
@@ -373,7 +370,7 @@ export const CooperativeDashboard = () => {
                         {announcement.date}
                       </p>
                     </div>
-                    <Badge
+                    {/* <Badge
                       className={`px-3 py-1 ${
                         announcement.priority === "high"
                           ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
@@ -383,7 +380,7 @@ export const CooperativeDashboard = () => {
                       }`}
                     >
                       {announcement.priority}
-                    </Badge>
+                    </Badge> */}
                   </div>
                 </div>
               ))}

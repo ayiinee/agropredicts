@@ -17,8 +17,7 @@ import Orders from "./pages/Orders";
 import Analytics from "./pages/Analytics";
 import PestDetection from "./pages/PestDetection";
 import FarmerProducts from "./pages/FarmerProducts";
-import GroupManagement from "./pages/GroupManagement";
-import CooperativeAnalytics from "./pages/CooperativeAnalytics";
+import Announcements from "./pages/Announcements";
 import Treatment from "./pages/Treatment";
 import TreatmentDetail from "./pages/TreatmentDetail";
 import Warnings from "./pages/Warnings";
@@ -83,18 +82,10 @@ const App = () => (
               }
             />
             <Route
-              path="/group"
+              path="/announcements"
               element={
                 <ProtectedRoute>
-                  <GroupManagement />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute>
-                  <CooperativeAnalytics />
+                  <Announcements />
                 </ProtectedRoute>
               }
             />

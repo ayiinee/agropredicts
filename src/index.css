@@ -60,7 +60,7 @@
     /* Farm-specific colors with eco theme */
     --farmer-primary: 154 50% 45%; /* #31B57F */
     --distributor-primary: 24 85% 53%;
-    --cooperative-primary: 220 85% 58%;
+    --cooperative-primary: 154 50% 45%; /* Same as farmer-primary */
 
     /* Modern border radius */
     --radius: 1rem; /* 16px for modern look */
@@ -144,7 +144,7 @@
     /* Dark farm-specific colors */
     --farmer-primary: 154 50% 55%;
     --distributor-primary: 24 75% 60%;
-    --cooperative-primary: 220 75% 65%;
+    --cooperative-primary: 154 50% 55%; /* Same as farmer-primary */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 154 50% 55%;

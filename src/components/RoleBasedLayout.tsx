@@ -19,6 +19,7 @@ import {
   Building2,
   Camera,
   Bell,
+  MessageCircle,
 } from "lucide-react";
 import { useWarnings } from "@/hooks/useWarnings";
 
@@ -94,8 +95,7 @@ export const RoleBasedLayout = ({ children }: RoleBasedLayoutProps) => {
       navigation: [
         { label: "Dashboard", icon: Home, path: "/" },
         { label: "Produk Petani", icon: Package, path: "/farmer-products" },
-        { label: "Manajemen Kelompok", icon: Users, path: "/group" },
-        { label: "Analitik", icon: BarChart3, path: "/analytics" },
+        { label: "Pengumuman", icon: MessageCircle, path: "/announcements" },
       ],
     },
   };
