@@ -37,41 +37,47 @@ export default function FieldDetail() {
   // Mock field data - in real app, this would come from API based on fieldId
   const fieldData = {
     id: Number(fieldId),
-    name: 'Ladang A - Jagung',
-    area: '5.2 hektar',
-    growth: 75,
-    harvestDate: '2024-09-15',
-    estimatedYield: '2,400 kg',
-    cropType: "corn",
-    plantingDate: "2024-03-15",
+    name: "Ladang A - Padi",
+    area: "500 m²",
+    growth: 19,
+    harvestDate: "2026-02-01",
+    estimatedYield: "2,400 kg",
+    cropType: "padi",
+    plantingDate: "2025-10-01",
     alerts: 1,
   };
 
   // Initialize sensor data with some realistic values
   const [sensorData, setSensorData] = useState<SensorData>({
     temperature_C: 24.5,
-    humidity_percent: 68,
-    soil_moisture_percent: 45,
+    humidity_percent: 78,
+    soil_moisture_percent: 75,
   });
 
   // Use the disease prediction hook
-  const { 
-    prediction, 
-    loading, 
-    error, 
-    isApiAvailable, 
-    predictDisease, 
-    refreshPrediction 
+  const {
+    prediction,
+    loading,
+    error,
+    isApiAvailable,
+    predictDisease,
+    refreshPrediction,
   } = useDiseasePrediction(sensorData);
 
   // Simulate real-time sensor data updates
   useEffect(() => {
     const interval = setInterval(() => {
       // Simulate sensor data changes
-      setSensorData(prev => ({
+      setSensorData((prev) => ({
         temperature_C: prev.temperature_C + (Math.random() - 0.5) * 2,
-        humidity_percent: Math.max(30, Math.min(95, prev.humidity_percent + (Math.random() - 0.5) * 4)),
-        soil_moisture_percent: Math.max(20, Math.min(80, prev.soil_moisture_percent + (Math.random() - 0.5) * 3)),
+        humidity_percent: Math.max(
+          30,
+          Math.min(95, prev.humidity_percent + (Math.random() - 0.5) * 4)
+        ),
+        soil_moisture_percent: Math.max(
+          20,
+          Math.min(80, prev.soil_moisture_percent + (Math.random() - 0.5) * 3)
+        ),
       }));
     }, 30000); // Update every 30 seconds
 
@@ -133,9 +139,9 @@ export default function FieldDetail() {
               Offline Mode
             </Badge>
           )}
-          {fieldData.alerts > 0 && (
+          {/* {fieldData.alerts > 0 && (
             <Badge variant="destructive">{fieldData.alerts} peringatan</Badge>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -179,19 +185,21 @@ export default function FieldDetail() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5" />
-                Data Sensor Real-time
+                Data Sensor Lahan
               </CardTitle>
               <CardDescription>
                 Pemantauan lingkungan secara langsung dari sensor lapangan
               </CardDescription>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={refreshPrediction}
               disabled={loading}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
           </div>
@@ -212,11 +220,16 @@ export default function FieldDetail() {
                       <Thermometer className="h-5 w-5 text-blue-500" />
                     </div>
                     <div>
-                      <p className="text-l font-bold">{sensorData.temperature_C.toFixed(1)}°C</p>
+                      <p className="text-l font-bold">
+                        {sensorData.temperature_C.toFixed(1)}°C
+                      </p>
                       <p className="text-sm text-muted-foreground">Suhu</p>
                       <p className="text-xs text-blue-600">
-                        {sensorData.temperature_C > 30 ? 'Tinggi' : 
-                         sensorData.temperature_C < 20 ? 'Rendah' : 'Optimal'}
+                        {sensorData.temperature_C > 30
+                          ? "Tinggi"
+                          : sensorData.temperature_C < 20
+                          ? "Rendah"
+                          : "Optimal"}
                       </p>
                     </div>
                   </div>
@@ -231,11 +244,18 @@ export default function FieldDetail() {
                       <Droplets className="h-5 w-5 text-green-500" />
                     </div>
                     <div>
-                      <p className="text-l font-bold">{sensorData.humidity_percent.toFixed(1)}%</p>
-                      <p className="text-sm text-muted-foreground">Kelembapan</p>
+                      <p className="text-l font-bold">
+                        {sensorData.humidity_percent.toFixed(1)}%
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Kelembapan
+                      </p>
                       <p className="text-xs text-green-600">
-                        {sensorData.humidity_percent > 80 ? 'Tinggi' : 
-                         sensorData.humidity_percent < 50 ? 'Rendah' : 'Optimal'}
+                        {sensorData.humidity_percent > 80
+                          ? "Tinggi"
+                          : sensorData.humidity_percent < 50
+                          ? "Rendah"
+                          : "Optimal"}
                       </p>
                     </div>
                   </div>
@@ -250,11 +270,18 @@ export default function FieldDetail() {
                       <Droplets className="h-5 w-5 text-orange-500" />
                     </div>
                     <div>
-                      <p className="text-l font-bold">{sensorData.soil_moisture_percent.toFixed(1)}%</p>
-                      <p className="text-sm text-muted-foreground">Kelembapan Tanah</p>
+                      <p className="text-l font-bold">
+                        {sensorData.soil_moisture_percent.toFixed(1)}%
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Kelembapan Tanah
+                      </p>
                       <p className="text-xs text-orange-600">
-                        {sensorData.soil_moisture_percent > 70 ? 'Tinggi' : 
-                         sensorData.soil_moisture_percent < 40 ? 'Rendah' : 'Optimal'}
+                        {sensorData.soil_moisture_percent > 70
+                          ? "Tinggi"
+                          : sensorData.soil_moisture_percent < 40
+                          ? "Rendah"
+                          : "Optimal"}
                       </p>
                     </div>
                   </div>
@@ -269,7 +296,7 @@ export default function FieldDetail() {
                       <Beaker className="h-5 w-5 text-purple-500" />
                     </div>
                     <div>
-                      <p className="text-l font-bold">6.8 pH</p>
+                      <p className="text-l font-bold">5.6 pH</p>
                       <p className="text-sm text-muted-foreground">pH Tanah</p>
                       <p className="text-xs text-purple-600">Optimal</p>
                     </div>
@@ -278,7 +305,7 @@ export default function FieldDetail() {
               </Card>
             </div>
           )}
-          
+
           {error && (
             <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <p className="text-sm text-orange-800">
@@ -301,7 +328,8 @@ export default function FieldDetail() {
             Analisis berbasis AI untuk potensi penyakit tanaman
             {prediction && (
               <span className="ml-2 text-xs text-muted-foreground">
-                • Terakhir diperbarui: {new Date(prediction.timestamp).toLocaleTimeString()}
+                • Terakhir diperbarui:{" "}
+                {new Date(prediction.timestamp).toLocaleTimeString()}
               </span>
             )}
           </CardDescription>
@@ -317,21 +345,29 @@ export default function FieldDetail() {
               {/* Overall Risk */}
               <div className="p-4 rounded-lg bg-muted/50">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium">Risiko Penyakit Keseluruhan</span>
-                  <span className={`text-2xl font-bold ${
-                    prediction.overall_risk < 15 ? 'text-green-600' :
-                    prediction.overall_risk < 35 ? 'text-orange-600' : 'text-red-600'
-                  }`}>
+                  <span className="font-medium">
+                    Risiko Penyakit Keseluruhan
+                  </span>
+                  <span
+                    className={`text-2xl font-bold ${
+                      prediction.overall_risk < 15
+                        ? "text-green-600"
+                        : prediction.overall_risk < 35
+                        ? "text-orange-600"
+                        : "text-red-600"
+                    }`}
+                  >
                     {prediction.overall_risk}%
                   </span>
                 </div>
                 <Progress value={prediction.overall_risk} className="h-2" />
                 <p className="text-sm text-muted-foreground mt-2">
-                  Risiko {prediction.risk_level} - {getRiskDescription(prediction.overall_risk)}
+                  Risiko {prediction.risk_level} -{" "}
+                  {getRiskDescription(prediction.overall_risk)}
                 </p>
               </div>
 
-              {/* Individual Risks */}
+              {/* Individual Risks
               {prediction.disease_risks.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="font-medium">Risiko Penyakit Spesifik</h4>
@@ -355,9 +391,9 @@ export default function FieldDetail() {
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
 
-              {/* Predicted Disease */}
+              {/* Predicted Disease
               <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 text-blue-600" />
@@ -365,7 +401,7 @@ export default function FieldDetail() {
                     Penyakit yang Diprediksi: {prediction.predicted_disease}
                   </span>
                 </div>
-              </div>
+              </div> */}
             </div>
           ) : error ? (
             <div className="flex items-center justify-center py-8">
@@ -377,7 +413,9 @@ export default function FieldDetail() {
             </div>
           ) : (
             <div className="flex items-center justify-center py-8">
-              <p className="text-muted-foreground">Tidak ada data prediksi tersedia</p>
+              <p className="text-muted-foreground">
+                Tidak ada data prediksi tersedia
+              </p>
             </div>
           )}
         </CardContent>
@@ -390,9 +428,9 @@ export default function FieldDetail() {
             <Lightbulb className="h-5 w-5" />
             Saran Penanganan
           </CardTitle>
-          <CardDescription>
+          {/* <CardDescription>
             Tindakan yang direkomendasikan berdasarkan kondisi lahan saat ini
-          </CardDescription>
+          </CardDescription> */}
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -424,7 +462,9 @@ export default function FieldDetail() {
             </div>
           ) : (
             <div className="flex items-center justify-center py-8">
-              <p className="text-muted-foreground">Tidak ada saran penanganan tersedia</p>
+              <p className="text-muted-foreground">
+                Tidak ada saran penanganan tersedia
+              </p>
             </div>
           )}
         </CardContent>

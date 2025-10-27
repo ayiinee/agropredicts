@@ -179,7 +179,7 @@ const getProductIcon = (productName: string) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold gradient-text">
-            Halo, {profile?.full_name}! 🌾
+            Halo, {profile?.full_name}!
           </h1>
           <p className="text-lg text-muted-foreground">
             Kelola operasi koperasi dan jaringan petani Anda

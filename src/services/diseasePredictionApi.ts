@@ -203,7 +203,7 @@ class DiseasePredictionApi {
       treatments.push({
         id: 1,
         title: 'Pemantauan Rutin',
-        description: 'Kondisi tanaman dalam keadaan baik. Lanjutkan pemantauan rutin.',
+        description: '',
         priority: 'low',
         action: 'Pertahankan jadwal perawatan saat ini'
       });

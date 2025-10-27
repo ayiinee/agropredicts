@@ -3,10 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { RoleBasedLayout } from "@/components/RoleBasedLayout";
 import { useWarnings } from "@/hooks/useWarnings";
 import { Clock, MapPin, AlertTriangle, Info, OctagonAlert } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export default function Warnings() {
   const { warnings, loading, markAsRead } = useWarnings();
+  const navigate = useNavigate();
   const sorted = [...warnings].sort(
     (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
   );
@@ -92,7 +94,15 @@ export default function Warnings() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="text-xs">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => {
+                          markAsRead(w.id);
+                          navigate("/groups");
+                        }}
+                      >
                         Detail
                       </Button>
                     </div>

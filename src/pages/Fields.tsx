@@ -114,8 +114,8 @@ export default function Fields() {
       setFields(updatedFields);
 
       toast({
-        title: "Success",
-        description: "Field created successfully!",
+        title: "Berhasil",
+        description: "Lahan berhasil didaftarkan!",
       });
     } catch (error) {
       console.error("Error creating field:", error);
@@ -222,15 +222,15 @@ export default function Fields() {
         ) : fields.length === 0 ? (
           <div className="text-center py-12">
             <Sprout className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No fields yet</h3>
-            <p className="text-gray-600 mb-4">Get started by adding your first field.</p>
-            <Button 
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Belum ada lahan terdaftar</h3>
+            <p className="text-gray-600 mb-4">Mulaillah dengan menambahkan lahan pertama Anda</p>
+            {/* <Button 
               onClick={() => setIsModalOpen(true)}
               className="bg-[#31B57F] hover:bg-[#27A06F]"
             >
               <Sprout className="h-4 w-4 mr-2" />
               Add Your First Field
-            </Button>
+            </Button> */}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
